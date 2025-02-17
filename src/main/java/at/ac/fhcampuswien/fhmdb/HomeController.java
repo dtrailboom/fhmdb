@@ -1,5 +1,6 @@
 package at.ac.fhcampuswien.fhmdb;
 
+import at.ac.fhcampuswien.fhmdb.models.Genre;
 import at.ac.fhcampuswien.fhmdb.models.Movie;
 import at.ac.fhcampuswien.fhmdb.ui.MovieCell;
 import com.jfoenix.controls.JFXButton;
@@ -16,6 +17,8 @@ import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import static at.ac.fhcampuswien.fhmdb.models.Genre.*;
+
 public class HomeController implements Initializable {
     @FXML
     public JFXButton searchBtn;
@@ -27,7 +30,7 @@ public class HomeController implements Initializable {
     public JFXListView<Movie> movieListView;
 
     @FXML
-    public JFXComboBox<String> genreComboBox;
+    public JFXComboBox<Genre> genreComboBox;
 
     @FXML
     public JFXButton sortBtn;
@@ -46,24 +49,24 @@ public class HomeController implements Initializable {
 
         // Add genre filter items
         genreComboBox.getItems().addAll(
-                "NO FILTER","ACTION", "ADVENTURE", "ANIMATION", "BIOGRAPHY", "COMEDY",
-                "CRIME", "DRAMA", "DOCUMENTARY", "FAMILY", "FANTASY",
-                "HISTORY", "HORROR", "MUSICAL", "MYSTERY", "ROMANCE",
-                "SCIENCE_FICTION", "SPORT", "THRILLER", "WAR", "WESTERN"
+                NO_FILTER, ACTION, ADVENTURE, ANIMATION, BIOGRAPHY, COMEDY,
+                CRIME, DRAMA, DOCUMENTARY, FAMILY, FANTASY,
+                HISTORY, HORROR, MUSICAL, MYSTERY, ROMANCE,
+                SCIENCE_FICTION, SPORT, THRILLER, WAR, WESTERN
         );
         genreComboBox.setPromptText("Filter by Genre");
 
         // Add event handlers
-        searchBtn.setOnAction(actionEvent -> applyFilters(genreComboBox.getValue()));
+        searchBtn.setOnAction(actionEvent -> applyFilters());
         sortBtn.setOnAction(actionEvent -> sortMovies());
 
         // Add Enter key support for the search field
         searchField.setOnKeyPressed(keyEvent -> {
             if (keyEvent.getCode() == KeyCode.ENTER) {
-                applyFilters(genreComboBox.getValue()); // Trigger filtering
+                applyFilters(); // Trigger filtering
             } else if (keyEvent.getCode() == KeyCode.ESCAPE) {
                 searchField.clear(); // Clear the search field
-                applyFilters(genreComboBox.getValue()); // Reapply filters (to show all movies)
+                applyFilters(); // Reapply filters (to show all movies)
             }
         });
 
@@ -72,21 +75,27 @@ public class HomeController implements Initializable {
 
     }
 
-    public void applyFilters(String filter) {
+    public void applyFilters() {
         // 1. Benutzer-Eingaben aus Suchfeld und Genre-Filter lesen
         String searchText = searchField.getText().toLowerCase().trim();
         // Suchtext in Kleinbuchstaben umwandeln
-        String selectedGenre = genreComboBox.getSelectionModel().getSelectedItem();
+        var selectedGenre = genreComboBox.getSelectionModel().getSelectedItem();
+
 
         List<Movie> filteredMovies = allMovies.stream()
                 .filter(movie -> matchesSearchQuery(movie, searchText))
                 .filter(movie -> matchesGenre(movie, selectedGenre))
                 .toList();
+        System.out.println("Vorher: " + observableMovies); // Debug-Ausgabe
         observableMovies.clear();
+        System.out.println("Nach clear(): " + observableMovies); //
+
         observableMovies.addAll(filteredMovies);
         movieListView.refresh();
 
     }
+
+
 
     private boolean matchesSearchQuery(Movie movie, String searchText) {
         return searchText.isEmpty() ||
@@ -94,8 +103,8 @@ public class HomeController implements Initializable {
                 movie.getDescription().toLowerCase().contains(searchText);
     }
 
-    private boolean matchesGenre(Movie movie, String selectedGenre) {
-        return "NO FILTER".equals(selectedGenre) || selectedGenre == null || selectedGenre.isEmpty() ||
+    private boolean matchesGenre(Movie movie, Genre selectedGenre) {
+        return selectedGenre.equals(NO_FILTER) || selectedGenre == null ||
                 (movie.getGenres() != null && movie.getGenres().contains(selectedGenre));
     }
 

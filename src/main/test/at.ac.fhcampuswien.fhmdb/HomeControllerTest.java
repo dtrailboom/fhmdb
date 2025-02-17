@@ -6,28 +6,40 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import  java.util.List;
 
+import static at.ac.fhcampuswien.fhmdb.models.Genre.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class HomeControllerTest {
+
+
+
+
     private HomeController homeController;
 
     @BeforeEach
     void setUp() {
-        // Create or inject the homeController
-        if (homeController == null) {
-            // Initialize  homeController
-        }
+        homeController = new HomeController();
+
+
+
+
     }
 
-
     @Test
-    void testApplyFilterWithValue(/*String filter*/) {
+    void testApplyFilters() {
         // Test filtering by search text
-
-        //homeController.applyFilters(filter);
+        homeController.searchField.setText("");
+        homeController.applyFilters();
         ObservableList<Movie> filteredMovies = homeController.movieListView.getItems();
         assertEquals(1, filteredMovies.size());
         assertEquals("Blade Runner", filteredMovies.get(0).getTitle());
+
+        // Test filtering by genre
+        homeController.genreComboBox.getSelectionModel().select(ACTION);
+        homeController.applyFilters();
+        filteredMovies = homeController.movieListView.getItems();
+        assertTrue(filteredMovies.size() > 0);
+        assertTrue(filteredMovies.stream().allMatch(movie -> movie.getGenres().contains(ACTION)));
     }
 
     @Test

@@ -27,7 +27,6 @@ class HomeControllerTest {
     @ValueSource(strings = {"ACTION","DRAMA"})
     void testApplyFilterWithValue(String filter) {
         // Test filtering by search text
-
         //homeController.applyFilters(filter);
         ObservableList<Movie> filteredMovies = homeController.movieListView.getItems();
         assertEquals(1, filteredMovies.size());

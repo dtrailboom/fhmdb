@@ -3,8 +3,11 @@ package at.ac.fhcampuswien.fhmdb;
 import at.ac.fhcampuswien.fhmdb.models.Movie;
 import javafx.collections.ObservableList;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.params.ParameterizedTest;
+
 import org.junit.jupiter.api.Test;
-import  java.util.List;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.jupiter.params.shadow.com.univocity.parsers.annotations.Validate;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -20,8 +23,9 @@ class HomeControllerTest {
     }
 
 
-    @Test
-    void testApplyFilterWithValue(/*String filter*/) {
+    @ParameterizedTest
+    @ValueSource(strings = {"ACTION","DRAMA"})
+    void testApplyFilterWithValue(String filter) {
         // Test filtering by search text
 
         //homeController.applyFilters(filter);

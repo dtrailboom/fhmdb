@@ -54,16 +54,16 @@ public class HomeController implements Initializable {
         genreComboBox.setPromptText("Filter by Genre");
 
         // Add event handlers
-        searchBtn.setOnAction(actionEvent -> applyFilters(genreComboBox.getValue()));
+        searchBtn.setOnAction(actionEvent -> applyFilters());
         sortBtn.setOnAction(actionEvent -> sortMovies());
 
         // Add Enter key support for the search field
         searchField.setOnKeyPressed(keyEvent -> {
             if (keyEvent.getCode() == KeyCode.ENTER) {
-                applyFilters(genreComboBox.getValue()); // Trigger filtering
+                applyFilters(); // Trigger filtering
             } else if (keyEvent.getCode() == KeyCode.ESCAPE) {
                 searchField.clear(); // Clear the search field
-                applyFilters(genreComboBox.getValue()); // Reapply filters (to show all movies)
+                applyFilters(); // Reapply filters (to show all movies)
             }
         });
 
@@ -72,7 +72,7 @@ public class HomeController implements Initializable {
 
     }
 
-    public void applyFilters(String filter) {
+    public void applyFilters() {
         // 1. Benutzer-Eingaben aus Suchfeld und Genre-Filter lesen
         String searchText = searchField.getText().toLowerCase().trim();
         // Suchtext in Kleinbuchstaben umwandeln

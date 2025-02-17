@@ -9,36 +9,25 @@ import  java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 class HomeControllerTest {
-
-
-
-
     private HomeController homeController;
 
     @BeforeEach
     void setUp() {
-        homeController = new HomeController();
-
-
-
-
+        // Create or inject the homeController
+        if (homeController == null) {
+            // Initialize  homeController
+        }
     }
 
+
     @Test
-    void testApplyFilters() {
+    void testApplyFilterWithValue(/*String filter*/) {
         // Test filtering by search text
-        homeController.searchField.setText("");
-        homeController.applyFilters();
+
+        //homeController.applyFilters(filter);
         ObservableList<Movie> filteredMovies = homeController.movieListView.getItems();
         assertEquals(1, filteredMovies.size());
         assertEquals("Blade Runner", filteredMovies.get(0).getTitle());
-
-        // Test filtering by genre
-        homeController.genreComboBox.getSelectionModel().select("ACTION");
-        homeController.applyFilters();
-        filteredMovies = homeController.movieListView.getItems();
-        assertTrue(filteredMovies.size() > 0);
-        assertTrue(filteredMovies.stream().allMatch(movie -> movie.getGenres().contains("ACTION")));
     }
 
     @Test

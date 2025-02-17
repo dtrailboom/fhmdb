@@ -46,7 +46,7 @@ public class HomeController implements Initializable {
 
         // Add genre filter items
         genreComboBox.getItems().addAll(
-                "ACTION", "ADVENTURE", "ANIMATION", "BIOGRAPHY", "COMEDY",
+                "NO FILTER","ACTION", "ADVENTURE", "ANIMATION", "BIOGRAPHY", "COMEDY",
                 "CRIME", "DRAMA", "DOCUMENTARY", "FAMILY", "FANTASY",
                 "HISTORY", "HORROR", "MUSICAL", "MYSTERY", "ROMANCE",
                 "SCIENCE_FICTION", "SPORT", "THRILLER", "WAR", "WESTERN"
@@ -54,16 +54,16 @@ public class HomeController implements Initializable {
         genreComboBox.setPromptText("Filter by Genre");
 
         // Add event handlers
-        searchBtn.setOnAction(actionEvent -> applyFilters());
+        searchBtn.setOnAction(actionEvent -> applyFilters(genreComboBox.getValue()));
         sortBtn.setOnAction(actionEvent -> sortMovies());
 
         // Add Enter key support for the search field
         searchField.setOnKeyPressed(keyEvent -> {
             if (keyEvent.getCode() == KeyCode.ENTER) {
-                applyFilters(); // Trigger filtering
+                applyFilters(genreComboBox.getValue()); // Trigger filtering
             } else if (keyEvent.getCode() == KeyCode.ESCAPE) {
                 searchField.clear(); // Clear the search field
-                applyFilters(); // Reapply filters (to show all movies)
+                applyFilters(genreComboBox.getValue()); // Reapply filters (to show all movies)
             }
         });
 
@@ -72,38 +72,21 @@ public class HomeController implements Initializable {
 
     }
 
-    public void applyFilters() {
+    public void applyFilters(String filter) {
         // 1. Benutzer-Eingaben aus Suchfeld und Genre-Filter lesen
         String searchText = searchField.getText().toLowerCase().trim();
         // Suchtext in Kleinbuchstaben umwandeln
         String selectedGenre = genreComboBox.getSelectionModel().getSelectedItem();
 
-
         List<Movie> filteredMovies = allMovies.stream()
                 .filter(movie -> matchesSearchQuery(movie, searchText))
                 .filter(movie -> matchesGenre(movie, selectedGenre))
                 .toList();
-        System.out.println("Vorher: " + observableMovies); // Debug-Ausgabe
         observableMovies.clear();
-        System.out.println("Nach clear(): " + observableMovies); //
-
         observableMovies.addAll(filteredMovies);
         movieListView.refresh();
-        System.out.println("Nach Add: " + observableMovies);
-        System.out.println("Nach Add: " + observableMovies.size());
-        System.out.println("Nach Add: " + filteredMovies.size());
-
-
-        System.out.println(movieListView.getItems());
-
-        System.out.println("Search Text: " + searchText);
-        System.out.println("Selected Genre: " + selectedGenre);
-        System.out.println("Filtered Movies: " + filteredMovies);
-
 
     }
-
-
 
     private boolean matchesSearchQuery(Movie movie, String searchText) {
         return searchText.isEmpty() ||
@@ -112,7 +95,7 @@ public class HomeController implements Initializable {
     }
 
     private boolean matchesGenre(Movie movie, String selectedGenre) {
-        return selectedGenre == null || selectedGenre.isEmpty() ||
+        return "NO FILTER".equals(selectedGenre) || selectedGenre == null || selectedGenre.isEmpty() ||
                 (movie.getGenres() != null && movie.getGenres().contains(selectedGenre));
     }
 

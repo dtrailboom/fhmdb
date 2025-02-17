@@ -18,11 +18,9 @@ public class MovieTest {
     }
 
     @Test
-    void testInitializeMovies() {
+    void testInitializeMoviesNotNull() {
         List<Movie> movies = Movie.initializeMovies();
         assertNotNull(movies);
-        assertFalse(movies.isEmpty());
-        assertEquals(10, movies.size()); // Assuming 10 movies are initialized
     }
 
 

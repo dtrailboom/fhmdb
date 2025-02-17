@@ -12,6 +12,8 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.FontPosture;
 
+import java.util.stream.Collectors;
+
 public class MovieCell extends ListCell<Movie> {
     private final Label title = new Label();
     private final Label detail = new Label();
@@ -38,7 +40,8 @@ public class MovieCell extends ListCell<Movie> {
                             : "No description available"
             );
 
-            genres.setText("Genres: " + String.join(", ", movie.getGenres()));
+
+            genres.setText(movie.getGenres().stream().map(Enum::name).collect(Collectors.joining(", ")));
 
 
             // color scheme

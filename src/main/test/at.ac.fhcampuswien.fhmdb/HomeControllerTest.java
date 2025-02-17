@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.junit.jupiter.params.shadow.com.univocity.parsers.annotations.Validate;
 
+//import static at.ac.fhcampuswien.fhmdb.models.Genre.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class HomeControllerTest {
@@ -16,17 +17,14 @@ class HomeControllerTest {
 
     @BeforeEach
     void setUp() {
-        // Create or inject the homeController
-        if (homeController == null) {
-            // Initialize  homeController
-        }
+        homeController = new HomeController();
+
     }
 
-
-    @ParameterizedTest
-    @ValueSource(strings = {"ACTION","DRAMA"})
-    void testApplyFilterWithValue(String filter) {
+    @Test
+    void testApplyFilterWithValue(/*String filter*/) {
         // Test filtering by search text
+
         //homeController.applyFilters(filter);
         ObservableList<Movie> filteredMovies = homeController.movieListView.getItems();
         assertEquals(1, filteredMovies.size());

@@ -8,6 +8,8 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
+import static at.ac.fhcampuswien.fhmdb.models.Genre.ACTION;
+import static at.ac.fhcampuswien.fhmdb.models.Genre.DRAMA;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class MovieCellTest {
@@ -15,7 +17,7 @@ public class MovieCellTest {
     @Test
     void testUpdateItem() {
         MovieCell movieCell = new MovieCell();
-        Movie movie = new Movie("Title", "Description", List.of("ACTION", "DRAMA"));
+        Movie movie = new Movie("Title", "Description", List.of(ACTION, DRAMA));
 
         // Test non-empty cell
         movieCell.updateItem(movie, false);

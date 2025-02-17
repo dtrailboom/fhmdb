@@ -8,7 +8,6 @@ import static at.ac.fhcampuswien.fhmdb.models.Genre.*;
 public class Movie {
     private final String title;
     private final String description;
-    // TODO add more properties here
     private final List<Genre> genres;
 
     public Movie(String title, String description, List<Genre> genres) {
@@ -53,8 +52,6 @@ public class Movie {
         movies.add(new Movie("Heat", "Eine Gruppe professioneller Bankräuber hat die Polizei an den Fersen, als sie bei ihrem letzten Raubzug versehentlich eine heiße Spur hinterlassen.", List.of(ACTION, CRIME , DRAMA)));
         movies.add(new Movie("Inception", "Ein Dieb stiehlt Unternehmensgeheimnisse mithilfe einer Technologie für gemeinsames Träumen. Dann erhält er den Auftrag, eine Idee im Kopf eines Geschäftsführers festzusetzen.", List.of(ACTION, SCIENCE_FICTION, THRILLER)));
         movies.add(new Movie("Justice League", "Angetrieben von seinem wiederhergestellten Glauben an das Gute im Menschen und inspiriert von Supermans selbstlosen Taten, gewinnt Bruce Wayne die Unterstützung seiner neuen Verbündeten Diana Prince, um einem noch größeren Feind die Stirn zu bieten.", List.of(ACTION, FANTASY)));
-
-        // TODO add some dummy data here
 
         return movies;
 

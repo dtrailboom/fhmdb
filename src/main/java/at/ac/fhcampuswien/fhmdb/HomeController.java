@@ -104,8 +104,7 @@ public class HomeController implements Initializable {
     }
 
     private boolean matchesGenre(Movie movie, Genre selectedGenre) {
-        return selectedGenre.equals(NO_FILTER) || selectedGenre == null ||
-                (movie.getGenres() != null && movie.getGenres().contains(selectedGenre));
+        return selectedGenre.equals(NO_FILTER) || movie.getGenres() != null && movie.getGenres().contains(selectedGenre);
     }
 
     void sortMovies() {

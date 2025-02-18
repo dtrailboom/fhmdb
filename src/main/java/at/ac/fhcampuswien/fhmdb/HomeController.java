@@ -53,10 +53,6 @@ public class HomeController implements Initializable {
         );
         genreComboBox.setPromptText("Filter by Genre");
 
-        // Add event handlers
-        searchBtn.setOnAction(actionEvent -> applyFilters());
-        sortBtn.setOnAction(actionEvent -> sortMovies());
-
         // Add Enter key support for the search field
         searchField.setOnKeyPressed(keyEvent -> {
             if (keyEvent.getCode() == KeyCode.ENTER) {
@@ -116,7 +112,8 @@ public class HomeController implements Initializable {
                 (movie.getGenres() != null && movie.getGenres().contains(selectedGenre));
     }
 
-    void sortMovies() {
+    @FXML
+    void applySort() {
 
         if (sortBtn.getText().equals("Sort (asc)")) {
             FXCollections.sort(observableMovies, (movie1, movie2) ->

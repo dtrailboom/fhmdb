@@ -12,6 +12,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
+import org.assertj.core.annotations.NonNull;
 
 import java.net.URL;
 import java.util.List;
@@ -76,34 +77,32 @@ public class HomeController implements Initializable {
     }
 
     public void applyFilters() {
-        // 1. Benutzer-Eingaben aus Suchfeld und Genre-Filter lesen
-        String searchText = searchField.getText().toLowerCase().trim();
-        // Suchtext in Kleinbuchstaben umwandeln
-        var selectedGenre = genreComboBox.getSelectionModel().getSelectedItem();
-
-
-        List<Movie> filteredMovies = allMovies.stream()
-                .filter(movie -> matchesSearchQuery(movie, searchText))
-                .filter(movie -> matchesGenre(movie, selectedGenre))
-                .toList();
-        System.out.println("Vorher: " + observableMovies); // Debug-Ausgabe
         observableMovies.clear();
-        System.out.println("Nach clear(): " + observableMovies); //
+
+        var searchText = searchField.getText().toLowerCase().trim();
+        var selectedGenre = genreComboBox.getSelectionModel().getSelectedItem();
+        var filteredMovies = filterMovies(searchText, selectedGenre);
 
         observableMovies.addAll(filteredMovies);
         movieListView.refresh();
 
     }
 
+    public List<Movie> filterMovies(String searchText, Genre selectedGenre) {
+        return allMovies.stream()
+                .filter(movie -> matchesSearchQuery(movie, searchText))
+                .filter(movie -> matchesGenre(movie, selectedGenre))
+                .toList();
+    }
 
 
-    private boolean matchesSearchQuery(Movie movie, String searchText) {
+    public boolean matchesSearchQuery(Movie movie, String searchText) {
         return searchText.isEmpty() ||
                 movie.getTitle().toLowerCase().contains(searchText) ||
                 movie.getDescription().toLowerCase().contains(searchText);
     }
 
-    private boolean matchesGenre(Movie movie, Genre selectedGenre) {
+    public boolean matchesGenre(Movie movie, Genre selectedGenre) {
         return selectedGenre.equals(NO_FILTER) || movie.getGenres() != null && movie.getGenres().contains(selectedGenre);
     }
 

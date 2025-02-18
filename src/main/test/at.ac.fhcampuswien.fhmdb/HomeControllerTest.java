@@ -3,13 +3,14 @@ package at.ac.fhcampuswien.fhmdb;
 import at.ac.fhcampuswien.fhmdb.models.Movie;
 import javafx.collections.ObservableList;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.params.ParameterizedTest;
-
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.provider.ValueSource;
-import org.junit.jupiter.params.shadow.com.univocity.parsers.annotations.Validate;
 
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.List;
+
+import static at.ac.fhcampuswien.fhmdb.models.Genre.ACTION;
+import static at.ac.fhcampuswien.fhmdb.models.Genre.NO_FILTER;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class HomeControllerTest {
     private HomeController homeController;
@@ -19,16 +20,20 @@ class HomeControllerTest {
         homeController = new HomeController();
     }
 
-
-    @ParameterizedTest
-    @ValueSource(strings = {"ACTION","DRAMA"})
-    void testApplyFilterWithValue(String filter) {
-        // Test filtering by search text
-        //homeController.applyFilters(filter);
-        ObservableList<Movie> filteredMovies = homeController.movieListView.getItems();
-        assertEquals(1, filteredMovies.size());
-        assertEquals("Blade Runner", filteredMovies.get(0).getTitle());
+    @Test
+    void matchesGenre_genreAction_matchTrue() {
+        var movie = new Movie("Test", "Bla", List.of(ACTION));
+        var match = homeController.matchesGenre(movie, ACTION);
+        assertTrue(match);
     }
+
+    @Test
+    void matchesGenre_noFilter_matchFalse() {
+        var movie = new Movie("Test", "Bla", List.of(ACTION));
+        var match = homeController.matchesGenre(movie, NO_FILTER);
+        assertFalse(match);
+    }
+
 
     @Test
     void testSortMovies() {
@@ -47,9 +52,4 @@ class HomeControllerTest {
             assertTrue(sortedMovies.get(i - 1).getTitle().compareToIgnoreCase(sortedMovies.get(i).getTitle()) >= 0);
         }
     }
-
-
-
-
-
 }

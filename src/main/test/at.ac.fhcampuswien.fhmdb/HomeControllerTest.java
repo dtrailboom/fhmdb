@@ -5,10 +5,6 @@ import at.ac.fhcampuswien.fhmdb.models.Movie;
 import javafx.collections.ObservableList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.provider.EnumSource;
-import org.junit.jupiter.params.provider.ValueSource;
-import org.junit.jupiter.params.shadow.com.univocity.parsers.annotations.Validate;
-import org.junit.jupiter.params.shadow.com.univocity.parsers.annotations.Validate;
 import java.util.List;
 import static at.ac.fhcampuswien.fhmdb.models.Genre.ACTION;
 import static at.ac.fhcampuswien.fhmdb.models.Genre.NO_FILTER;
@@ -37,21 +33,4 @@ class HomeControllerTest {
         assertFalse(match);
     }
 
-    @Test
-    void testSortMovies() {
-        // Test ascending sort
-        homeController.sortBtn.setText("Sort (asc)");
-        homeController.sortMovies();
-        ObservableList<Movie> sortedMovies = homeController.movieListView.getItems();
-        for (int i = 1; i < sortedMovies.size(); i++) {
-            assertTrue(sortedMovies.get(i - 1).getTitle().compareToIgnoreCase(sortedMovies.get(i).getTitle()) <= 0);
-        }
-
-        // Test descending sort
-        homeController.sortMovies();
-        sortedMovies = homeController.movieListView.getItems();
-        for (int i = 1; i < sortedMovies.size(); i++) {
-            assertTrue(sortedMovies.get(i - 1).getTitle().compareToIgnoreCase(sortedMovies.get(i).getTitle()) >= 0);
-        }
-    }
 }

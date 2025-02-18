@@ -14,6 +14,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 
 import java.net.URL;
+import java.util.Collection;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -80,16 +81,15 @@ public class HomeController implements Initializable {
 
         var searchText = searchField.getText().toLowerCase().trim();
         var selectedGenre = genreComboBox.getSelectionModel().getSelectedItem();
-        var filteredMovies = filterMovies(searchText, selectedGenre);
+        var filteredMovies = filterMovies(allMovies, searchText, selectedGenre);
 
         observableMovies.addAll(filteredMovies);
         movieListView.refresh();
 
     }
 
-    public List<Movie> filterMovies(String searchText, Genre selectedGenre)
-    {
-        return allMovies.stream()
+    public List<Movie> filterMovies(List<Movie> movies, String searchText, Genre selectedGenre) {
+        return movies.stream()
                 .filter(movie -> matchesSearchQuery(movie, searchText))
                 .filter(movie -> matchesGenre(movie, selectedGenre))
                 .toList();

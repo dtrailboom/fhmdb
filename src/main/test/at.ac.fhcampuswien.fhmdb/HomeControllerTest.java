@@ -28,9 +28,10 @@ class HomeControllerTest {
 
     @Test
     void matchesGenre_noFilter_matchFalse() {
-        var movie = new Movie("TestMovie", "Information", List.of(ACTION));
-        var match = homeController.matchesGenre(movie, NO_FILTER);
+        var movie = new Movie("TestMovie", "Information", List.of(NO_FILTER));
+        var match = homeController.matchesGenre(movie, ACTION);
         assertFalse(match);
     }
+
 
 }

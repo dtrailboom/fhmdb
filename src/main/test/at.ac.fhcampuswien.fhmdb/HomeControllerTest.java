@@ -1,12 +1,15 @@
 package at.ac.fhcampuswien.fhmdb;
 
+import at.ac.fhcampuswien.fhmdb.models.Genre;
 import at.ac.fhcampuswien.fhmdb.models.Movie;
 import javafx.collections.ObservableList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.jupiter.params.shadow.com.univocity.parsers.annotations.Validate;
+import org.junit.jupiter.params.shadow.com.univocity.parsers.annotations.Validate;
 import java.util.List;
-
 import static at.ac.fhcampuswien.fhmdb.models.Genre.ACTION;
 import static at.ac.fhcampuswien.fhmdb.models.Genre.NO_FILTER;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -22,18 +25,17 @@ class HomeControllerTest {
 
     @Test
     void matchesGenre_genreAction_matchTrue() {
-        var movie = new Movie("Test", "Bla", List.of(ACTION));
+        var movie = new Movie("TestMovie", "Information", List.of(ACTION));
         var match = homeController.matchesGenre(movie, ACTION);
         assertTrue(match);
     }
 
     @Test
     void matchesGenre_noFilter_matchFalse() {
-        var movie = new Movie("Test", "Bla", List.of(ACTION));
+        var movie = new Movie("TestMovie", "Information", List.of(ACTION));
         var match = homeController.matchesGenre(movie, NO_FILTER);
         assertFalse(match);
     }
-
 
     @Test
     void testSortMovies() {

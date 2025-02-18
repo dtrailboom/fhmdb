@@ -88,11 +88,13 @@ public class HomeController implements Initializable {
 
     }
 
-    public List<Movie> filterMovies(String searchText, Genre selectedGenre) {
+    public List<Movie> filterMovies(String searchText, Genre selectedGenre)
+    {
         return allMovies.stream()
                 .filter(movie -> matchesSearchQuery(movie, searchText))
                 .filter(movie -> matchesGenre(movie, selectedGenre))
                 .toList();
+
     }
 
 

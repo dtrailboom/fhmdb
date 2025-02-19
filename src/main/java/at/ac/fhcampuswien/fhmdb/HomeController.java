@@ -13,6 +13,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -34,7 +36,7 @@ public class HomeController implements Initializable {
 
     public List<Movie> allMovies = Movie.initializeMovies();
 
-    private final ObservableList<Movie> observableMovies = FXCollections.observableArrayList();
+    public ObservableList<Movie> observableMovies = FXCollections.observableArrayList();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -52,6 +54,10 @@ public class HomeController implements Initializable {
                 "SCIENCE_FICTION", "SPORT", "THRILLER", "WAR", "WESTERN"
         );
         genreComboBox.setPromptText("Filter by Genre");
+
+        // Add event handlers
+        searchBtn.setOnAction(actionEvent -> applyFilters());
+        sortBtn.setOnAction(actionEvent -> applySort());
 
         // Add Enter key support for the search field
         searchField.setOnKeyPressed(keyEvent -> {
@@ -124,5 +130,25 @@ public class HomeController implements Initializable {
                     movie2.getTitle().compareToIgnoreCase(movie1.getTitle()));
             sortBtn.setText("Sort (asc)");
         }
+    }
+
+    public List<Movie> sortMovies(List<Movie> movies, boolean desc) {
+      //  List<Movie> mutableMovies = new ArrayList<>(movies); // Kopiere die Liste
+        if (desc) {
+
+            // Sortiere absteigend nach Titel
+            movies.sort(Comparator.comparing(Movie::getTitle).reversed());
+            System.out.println("Sortiert DESC nach Titel" + movies);
+        } else {
+            // Sortiere aufsteigend nach Titel
+            movies.sort(Comparator.comparing(Movie::getTitle));
+            System.out.println("Sortiert ASC nach Titel" + movies);
+
+        }
+
+        return movies;
+
+       // return mutableMovies; // Gibt die sortierte Liste zurück
+
     }
 }

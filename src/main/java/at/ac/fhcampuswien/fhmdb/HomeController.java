@@ -119,14 +119,13 @@ public class HomeController implements Initializable {
 
     @FXML
     void applySort() {
-
         if (sortBtn.getText().equals("Sort (asc)")) {
-            FXCollections.sort(observableMovies, (movie1, movie2) ->
-                    movie1.getTitle().compareToIgnoreCase(movie2.getTitle()));
+            var sortedMovies = sortMovies(observableMovies, true);
+            observableMovies.setAll(sortedMovies);
             sortBtn.setText("Sort (desc)");
         } else {
-            FXCollections.sort(observableMovies, (movie1, movie2) ->
-                    movie2.getTitle().compareToIgnoreCase(movie1.getTitle()));
+            var sortedMovies = sortMovies(observableMovies, false);
+            observableMovies.setAll(sortedMovies);
             sortBtn.setText("Sort (asc)");
         }
     }

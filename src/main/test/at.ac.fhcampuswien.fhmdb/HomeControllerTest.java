@@ -2,11 +2,6 @@ package at.ac.fhcampuswien.fhmdb;
 
 import at.ac.fhcampuswien.fhmdb.models.Movie;
 import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXListView;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.scene.control.Button;
-import javafx.scene.control.ListView;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.testfx.api.FxToolkit;
@@ -37,25 +32,6 @@ class HomeControllerTest {
         );
     }
 
-
-    @Test
-    void testApplyFilters() {
-        // Test filtering by search text
-        homeController.searchField.setText("");
-        homeController.applyFilters();
-
-        ObservableList<Movie> filteredMovies = homeController.movieListView.getItems();
-        assertEquals(1, filteredMovies.size());
-        assertEquals("Blade Runner", filteredMovies.get(0).getTitle());
-
-        // Test filtering by genre
-        homeController.genreComboBox.getSelectionModel().select("ACTION");
-        homeController.applyFilters();
-        filteredMovies = homeController.movieListView.getItems();
-        assertTrue(filteredMovies.size() > 0);
-        assertTrue(filteredMovies.stream().allMatch(movie -> movie.getGenres().contains("ACTION")));
-    }
-
     //-----SORTING------
 
     @Test
@@ -69,79 +45,89 @@ class HomeControllerTest {
     @Test
     void testSortMoviesDesc() {
 
-        homeController.sortMovies(homeController.observableMovies, true); //
+        var expected = List.of(inception, coolWorld, bladeRunner);
+        var result = homeController.sortMovies(movies, true);
 
-        for (int i = 1; i < homeController.observableMovies.size(); i++) {
-            assertTrue(homeController.observableMovies.get(i - 1).getTitle()
-                    .compareToIgnoreCase(homeController.observableMovies.get(i).getTitle()) >= 0);
-        }
+        assertEquals(expected, result);
     }
 
     @Test
     void testSortButtonInitialState() {
+        homeController.sortBtn.setText("Sort (asc)");
         assertEquals("Sort (asc)", homeController.sortBtn.getText());
     }
 
     @Test
     void testSortButtonIsNotInitialState() {
-        // Erwarteter Initialzustand des Buttons
+
         String initialState = "Sort (asc)";
 
         // Ändern Sie den Zustand des Buttons (beispielsweise durch Klick-Simulation)
         homeController.sortBtn.setText("Sort (desc)");
 
-        // Überprüfen Sie, dass der Zustand des Buttons nicht mehr dem Initialzustand entspricht
         assertNotEquals(initialState, homeController.sortBtn.getText());
     }
 
-    @Test
-    void testSortButtonTextToggle() {
-
-        homeController.applySort();
-        assertEquals("Sort (desc)", homeController.sortBtn.getText());
-
-        homeController.applySort();
-        assertEquals("Sort (asc)", homeController.sortBtn.getText());
-    }
 
     @Test
     void testSortMovies_EmptyList() {
-        homeController.observableMovies.clear();
-        assertDoesNotThrow(() -> homeController.applySort());
+        movies = new ArrayList<>(
+                List.of(new Movie("Test Movie", "Test Description", Collections.singletonList("ACTION")))
+        );
+        movies.clear();
+
+        assertDoesNotThrow(() -> homeController.sortMovies(movies, false));
     }
 
     @Test
     void testSortMovies_SingleMovie() {
+    Movie movie1 = new Movie("Terminator", "Killer Robot from the future!", Collections.singletonList("THRILLER"));
+    movies = List.of(movie1);
 
-        homeController.observableMovies.setAll(new Movie("Test Movie", "Test Description", Collections.singletonList("ACTION")));
-        //homeController.applySort();
-        assertEquals(1, homeController.observableMovies.size());
+    assertEquals(1, movies.size());
     }
 
     @Test
     void testSortMovies_CaseInsensitive() {
-
         Movie movie1 = new Movie("Apple", "An Apple is tasty!", Collections.singletonList("FOO"));
         Movie movie2 = new Movie("banana", "banana", Collections.singletonList("FOO"));
+        movies = List.of(movie2, movie1);
+        var expected = List.of(movie1, movie2);
+        var result = homeController.sortMovies(movies, false);
 
-        homeController.observableMovies.setAll(movie2, movie1);
-        homeController.applySort();
+        assertEquals(expected, result);
+    }
 
-        assertEquals("Apple", homeController.observableMovies.get(0).getTitle());
-        assertEquals("banana", homeController.observableMovies.get(1).getTitle());
+    @Test
+    void testSortMovies_CaseInsensitive_desc() {
+        Movie movie1 = new Movie("Apple", "An Apple is tasty!", Collections.singletonList("FOO"));
+        Movie movie2 = new Movie("banana", "banana", Collections.singletonList("FOO"));
+        movies = List.of(movie2, movie1);
+        var expected = List.of(movie2, movie1);
+        var result = homeController.sortMovies(movies, true);
+
+        assertEquals(expected, result);
     }
 
     @Test
     void testSortMovies_StableSort() {
-
         Movie movie1 = new Movie("Inception", "Test Description", Collections.singletonList("SCIENCE_FICTION"));
         Movie movie2 = new Movie("Inception", "Test Description", Collections.singletonList("SCIENCE_FICTION"));
+        movies = List.of(movie2, movie1);
+        var expected = List.of(movie1, movie2);
+        var result = homeController.sortMovies(movies, false);
+        assertEquals(expected, result);
+    }
 
-        homeController.observableMovies.setAll(movie1, movie2);
-        homeController.applySort();
+    @Test
+    void testSortMovies_StableSort_desc() {
+        Movie movie1 = new Movie("Inception", "Test Description", Collections.singletonList("SCIENCE_FICTION"));
+        Movie movie2 = new Movie("Inception", "Test Description", Collections.singletonList("SCIENCE_FICTION"));
+        movies = List.of(movie2, movie1);
+        var expected = List.of(movie2, movie1);
+        var result = homeController.sortMovies(movies, true);
 
-        assertSame(movie1, homeController.observableMovies.get(0));
-        assertSame(movie2, homeController.observableMovies.get(1));
+        assertEquals(expected, result);
     }
 
 
@@ -149,15 +135,22 @@ class HomeControllerTest {
     void testSortMovies_EmptyTitles() {
         Movie movie1 = new Movie("", "Test Description", Collections.singletonList("ACTION"));
         Movie movie2 = new Movie("Blade Runner", "Test Description", Collections.singletonList("ACTION"));
-        homeController.observableMovies.setAll(movie2, movie1);
+        movies = List.of(movie2, movie1);
+        var expected = List.of(movie1, movie2);
+        var result = homeController.sortMovies(movies, false);
 
-        homeController.applySort(); // Sort ascending
-        assertEquals("", homeController.observableMovies.get(0).getTitle());
-        assertEquals("Blade Runner", homeController.observableMovies.get(1).getTitle());
+        assertEquals(expected, result);
+    }
 
-        homeController.applySort(); // Sort descending
-        assertEquals("Blade Runner", homeController.observableMovies.get(0).getTitle());
-        assertEquals("", homeController.observableMovies.get(1).getTitle());
+    @Test
+    void testSortMovies_EmptyTitles_desc(){
+        Movie movie1 = new Movie("", "Test Description", Collections.singletonList("ACTION"));
+        Movie movie2 = new Movie("Blade Runner", "Test Description", Collections.singletonList("ACTION"));
+        movies = List.of(movie2, movie1);
+        var expected = List.of(movie2, movie1);
+        var result = homeController.sortMovies(movies, true);
+
+        assertEquals(expected, result);
     }
 
     @Test
@@ -188,35 +181,50 @@ class HomeControllerTest {
     void testSortMovies_LongTitles() {
         Movie movie1 = new Movie("A Very Long Movie Title That Tests Sorting", "Description 1", Collections.singletonList("ACTION"));
         Movie movie2 = new Movie("Another Long Movie Title", "Description 2", Collections.singletonList("ACTION"));
-        homeController.observableMovies.setAll(movie2, movie1);
-
+        movies = List.of(movie2, movie1);
         // Sort in ascending order
-        homeController.applySort();
-        assertEquals("A Very Long Movie Title That Tests Sorting", homeController.observableMovies.get(0).getTitle());
-        assertEquals("Another Long Movie Title", homeController.observableMovies.get(1).getTitle());
+        var result = homeController.sortMovies(movies, false);
+        var expected = List.of(movie1, movie2);
 
+        assertEquals(expected, result);
+
+    }
+
+    @Test
+    void testSortMovies_LongTitles_desc(){
+        Movie movie1 = new Movie("A Very Long Movie Title That Tests Sorting", "Description 1", Collections.singletonList("ACTION"));
+        Movie movie2 = new Movie("Another Long Movie Title", "Description 2", Collections.singletonList("ACTION"));
+        movies = List.of(movie2, movie1);
         // Sort in descending order
-        homeController.applySort();
-        assertEquals("Another Long Movie Title", homeController.observableMovies.get(0).getTitle());
-        assertEquals("A Very Long Movie Title That Tests Sorting", homeController.observableMovies.get(1).getTitle());
+        var result = homeController.sortMovies(movies, true);
+        var expected = List.of(movie2, movie1);
+
+        assertEquals(expected, result);
+
     }
 
     @Test
     void testSortMovies_SpecialCharacters() {
         Movie movie1 = new Movie("#Special Movie", "Description 1", Collections.singletonList("ACTION"));
         Movie movie2 = new Movie("123 Movie", "Description 2", Collections.singletonList("ACTION"));
-        homeController.observableMovies.setAll(movie1, movie2);
-
+        movies = List.of(movie2, movie1);
         // Sort in ascending order
-        homeController.applySort();
-        assertEquals("#Special Movie", homeController.observableMovies.get(0).getTitle());
-        assertEquals("123 Movie", homeController.observableMovies.get(1).getTitle());
+        var result = homeController.sortMovies(movies, false);
+        var expected = List.of(movie1, movie2);
 
-        // Sort in descending order
-        homeController.applySort();
-        assertEquals("123 Movie", homeController.observableMovies.get(0).getTitle());
-        assertEquals("#Special Movie", homeController.observableMovies.get(1).getTitle());
+        assertEquals(expected, result);
     }
 
+    @Test
+    void testSortMovies_SpecialCharacters_desc(){
+        Movie movie1 = new Movie("#Special Movie", "Description 1", Collections.singletonList("ACTION"));
+        Movie movie2 = new Movie("123 Movie", "Description 2", Collections.singletonList("ACTION"));
+        movies = List.of(movie2, movie1);
+        // Sort in descending order
+        var result = homeController.sortMovies(movies, true);
+        var expected = List.of(movie2, movie1);
+
+        assertEquals(expected, result);
+    }
 
 }

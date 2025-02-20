@@ -106,7 +106,6 @@ public class HomeController implements Initializable {
     }
 
 
-
     private boolean matchesSearchQuery(Movie movie, String searchText) {
         return searchText.isEmpty() ||
                 movie.getTitle().toLowerCase().contains(searchText) ||
@@ -133,22 +132,10 @@ public class HomeController implements Initializable {
     }
 
     public List<Movie> sortMovies(List<Movie> movies, boolean desc) {
-      //  List<Movie> mutableMovies = new ArrayList<>(movies); // Kopiere die Liste
         if (desc) {
-
-            // Sortiere absteigend nach Titel
-            movies.sort(Comparator.comparing(Movie::getTitle).reversed());
-            System.out.println("Sortiert DESC nach Titel" + movies);
-        } else {
-            // Sortiere aufsteigend nach Titel
-            movies.sort(Comparator.comparing(Movie::getTitle));
-            System.out.println("Sortiert ASC nach Titel" + movies);
-
+            return movies.stream().sorted(Comparator.comparing(Movie::getTitle).reversed()).toList();
         }
 
-        return movies;
-
-       // return mutableMovies; // Gibt die sortierte Liste zurück
-
+        return movies.stream().sorted(Comparator.comparing(Movie::getTitle)).toList();
     }
 }

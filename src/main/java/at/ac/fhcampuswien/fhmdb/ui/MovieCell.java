@@ -66,6 +66,8 @@ public class MovieCell extends ListCell<Movie> {
         }
     }
 
+
+
 }
 
 

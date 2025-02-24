@@ -2,6 +2,7 @@ package at.ac.fhcampuswien.fhmdb.models;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static at.ac.fhcampuswien.fhmdb.models.Genre.*;
 
@@ -30,7 +31,6 @@ public class Movie {
     }
 
 
-
     // Override toString() for debugging
     @Override
     public String toString() {
@@ -38,7 +38,7 @@ public class Movie {
     }
 
 
-    public static List<Movie> initializeMovies(){
+    public static List<Movie> initializeMovies() {
         List<Movie> movies = new ArrayList<>();
 
         // Add dummy movies
@@ -55,5 +55,17 @@ public class Movie {
 
         return movies;
 
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Movie movie = (Movie) o;
+        return Objects.equals(title, movie.title) && Objects.equals(description, movie.description) && Objects.equals(genres, movie.genres);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(title, description, genres);
     }
 }

@@ -15,6 +15,8 @@ import javafx.scene.input.KeyCode;
 
 import java.net.URL;
 import java.util.Collection;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -38,7 +40,7 @@ public class HomeController implements Initializable {
 
     public List<Movie> allMovies = Movie.initializeMovies();
 
-    private final ObservableList<Movie> observableMovies = FXCollections.observableArrayList();
+    public ObservableList<Movie> observableMovies = FXCollections.observableArrayList();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -59,7 +61,7 @@ public class HomeController implements Initializable {
 
         // Add event handlers
         searchBtn.setOnAction(actionEvent -> applyFilters());
-        sortBtn.setOnAction(actionEvent -> sortMovies());
+        sortBtn.setOnAction(actionEvent -> applySort());
 
         // Add Enter key support for the search field
         searchField.setOnKeyPressed(keyEvent -> {
@@ -96,8 +98,7 @@ public class HomeController implements Initializable {
 
     }
 
-
-    public boolean matchesSearchQuery(Movie movie, String searchText) {
+    private boolean matchesSearchQuery(Movie movie, String searchText) {
         return searchText.isEmpty() ||
                 movie.getTitle().toLowerCase().contains(searchText) ||
                 movie.getDescription().toLowerCase().contains(searchText);
@@ -107,16 +108,24 @@ public class HomeController implements Initializable {
         return selectedGenre.equals(NO_FILTER) || movie.getGenres() != null && movie.getGenres().contains(selectedGenre);
     }
 
-    void sortMovies() {
-
+    @FXML
+    void applySort() {
         if (sortBtn.getText().equals("Sort (asc)")) {
-            FXCollections.sort(observableMovies, (movie1, movie2) ->
-                    movie1.getTitle().compareToIgnoreCase(movie2.getTitle()));
+            var sortedMovies = sortMovies(observableMovies, true);
+            observableMovies.setAll(sortedMovies);
             sortBtn.setText("Sort (desc)");
         } else {
-            FXCollections.sort(observableMovies, (movie1, movie2) ->
-                    movie2.getTitle().compareToIgnoreCase(movie1.getTitle()));
+            var sortedMovies = sortMovies(observableMovies, false);
+            observableMovies.setAll(sortedMovies);
             sortBtn.setText("Sort (asc)");
         }
+    }
+
+    public List<Movie> sortMovies(List<Movie> movies, boolean desc) {
+        if (desc) {
+            return movies.stream().sorted(Comparator.comparing(Movie::getTitle).reversed()).toList();
+        }
+
+        return movies.stream().sorted(Comparator.comparing(Movie::getTitle)).toList();
     }
 }

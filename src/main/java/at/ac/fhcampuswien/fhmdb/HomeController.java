@@ -1,5 +1,6 @@
 package at.ac.fhcampuswien.fhmdb;
 
+import at.ac.fhcampuswien.fhmdb.models.Genre;
 import at.ac.fhcampuswien.fhmdb.models.Movie;
 import at.ac.fhcampuswien.fhmdb.ui.MovieCell;
 import com.jfoenix.controls.JFXButton;
@@ -13,10 +14,13 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 
 import java.net.URL;
+import java.util.Collection;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.ResourceBundle;
+
+import static at.ac.fhcampuswien.fhmdb.models.Genre.*;
 
 public class HomeController implements Initializable {
     @FXML
@@ -29,7 +33,7 @@ public class HomeController implements Initializable {
     public JFXListView<Movie> movieListView;
 
     @FXML
-    public JFXComboBox<String> genreComboBox;
+    public JFXComboBox<Genre> genreComboBox;
 
     @FXML
     public JFXButton sortBtn;
@@ -48,10 +52,10 @@ public class HomeController implements Initializable {
 
         // Add genre filter items
         genreComboBox.getItems().addAll(
-                "ACTION", "ADVENTURE", "ANIMATION", "BIOGRAPHY", "COMEDY",
-                "CRIME", "DRAMA", "DOCUMENTARY", "FAMILY", "FANTASY",
-                "HISTORY", "HORROR", "MUSICAL", "MYSTERY", "ROMANCE",
-                "SCIENCE_FICTION", "SPORT", "THRILLER", "WAR", "WESTERN"
+                NO_FILTER, ACTION, ADVENTURE, ANIMATION, BIOGRAPHY, COMEDY,
+                CRIME, DRAMA, DOCUMENTARY, FAMILY, FANTASY,
+                HISTORY, HORROR, MUSICAL, MYSTERY, ROMANCE,
+                SCIENCE_FICTION, SPORT, THRILLER, WAR, WESTERN
         );
         genreComboBox.setPromptText("Filter by Genre");
 
@@ -75,36 +79,24 @@ public class HomeController implements Initializable {
     }
 
     public void applyFilters() {
-        // 1. Benutzer-Eingaben aus Suchfeld und Genre-Filter lesen
-        String searchText = searchField.getText().toLowerCase().trim();
-        // Suchtext in Kleinbuchstaben umwandeln
-        String selectedGenre = genreComboBox.getSelectionModel().getSelectedItem();
-
-
-        List<Movie> filteredMovies = allMovies.stream()
-                .filter(movie -> matchesSearchQuery(movie, searchText))
-                .filter(movie -> matchesGenre(movie, selectedGenre))
-                .toList();
-        System.out.println("Vorher: " + observableMovies); // Debug-Ausgabe
         observableMovies.clear();
-        System.out.println("Nach clear(): " + observableMovies); //
+
+        var searchText = searchField.getText().toLowerCase().trim();
+        var selectedGenre = genreComboBox.getSelectionModel().getSelectedItem();
+        var filteredMovies = filterMovies(allMovies, searchText, selectedGenre);
 
         observableMovies.addAll(filteredMovies);
         movieListView.refresh();
-        System.out.println("Nach Add: " + observableMovies);
-        System.out.println("Nach Add: " + observableMovies.size());
-        System.out.println("Nach Add: " + filteredMovies.size());
-
-
-        System.out.println(movieListView.getItems());
-
-        System.out.println("Search Text: " + searchText);
-        System.out.println("Selected Genre: " + selectedGenre);
-        System.out.println("Filtered Movies: " + filteredMovies);
-
 
     }
 
+    public List<Movie> filterMovies(List<Movie> movies, String searchText, Genre selectedGenre) {
+        return movies.stream()
+                .filter(movie -> matchesSearchQuery(movie, searchText))
+                .filter(movie -> matchesGenre(movie, selectedGenre))
+                .toList();
+
+    }
 
     private boolean matchesSearchQuery(Movie movie, String searchText) {
         return searchText.isEmpty() ||
@@ -112,9 +104,8 @@ public class HomeController implements Initializable {
                 movie.getDescription().toLowerCase().contains(searchText);
     }
 
-    private boolean matchesGenre(Movie movie, String selectedGenre) {
-        return selectedGenre == null || selectedGenre.isEmpty() ||
-                (movie.getGenres() != null && movie.getGenres().contains(selectedGenre));
+    public boolean matchesGenre(Movie movie, Genre selectedGenre) {
+        return selectedGenre.equals(NO_FILTER) || movie.getGenres() != null && movie.getGenres().contains(selectedGenre);
     }
 
     @FXML

@@ -13,10 +13,10 @@ public class MovieTest {
     @Test
     void testMovieConstructor() {
         Movie movie = new Movie("Title", "Description", List.of(ACTION, DRAMA));
-        assertEquals("Title", movie.getTitle());
-        assertEquals("Description", movie.getDescription());
-        assertTrue(movie.getGenres().contains(ACTION));
-        assertTrue(movie.getGenres().contains(DRAMA));
+        assertEquals("Title", movie.title());
+        assertEquals("Description", movie.description());
+        assertTrue(movie.genres().contains(ACTION));
+        assertTrue(movie.genres().contains(DRAMA));
     }
 
     @Test

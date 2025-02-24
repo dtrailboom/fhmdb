@@ -14,8 +14,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 
 import java.net.URL;
-import java.util.Collection;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -100,12 +98,12 @@ public class HomeController implements Initializable {
 
     private boolean matchesSearchQuery(Movie movie, String searchText) {
         return searchText.isEmpty() ||
-                movie.getTitle().toLowerCase().contains(searchText) ||
-                movie.getDescription().toLowerCase().contains(searchText);
+                movie.title().toLowerCase().contains(searchText) ||
+                movie.description().toLowerCase().contains(searchText);
     }
 
     public boolean matchesGenre(Movie movie, Genre selectedGenre) {
-        return selectedGenre.equals(NO_FILTER) || movie.getGenres() != null && movie.getGenres().contains(selectedGenre);
+        return selectedGenre.equals(NO_FILTER) || movie.genres() != null && movie.genres().contains(selectedGenre);
     }
 
     @FXML
@@ -123,9 +121,9 @@ public class HomeController implements Initializable {
 
     public List<Movie> sortMovies(List<Movie> movies, boolean desc) {
         if (desc) {
-            return movies.stream().sorted(Comparator.comparing(Movie::getTitle).reversed()).toList();
+            return movies.stream().sorted(Comparator.comparing(Movie::title).reversed()).toList();
         }
 
-        return movies.stream().sorted(Comparator.comparing(Movie::getTitle)).toList();
+        return movies.stream().sorted(Comparator.comparing(Movie::title)).toList();
     }
 }

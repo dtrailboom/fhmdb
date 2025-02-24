@@ -9,7 +9,6 @@ import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
-import javafx.scene.text.Text;
 import javafx.scene.text.FontPosture;
 
 import java.util.stream.Collectors;
@@ -24,7 +23,7 @@ public class MovieCell extends ListCell<Movie> {
     @Override
     public void updateItem(Movie movie, boolean empty) {
         super.updateItem(movie, empty);
-        System.out.println("Updating cell: " + (empty ? "empty" : movie.getTitle())); // Debug
+        System.out.println("Updating cell: " + (empty ? "empty" : movie.title())); // Debug
 
         if (empty || movie == null) {
             setText(null);
@@ -33,15 +32,15 @@ public class MovieCell extends ListCell<Movie> {
 
         } else {
             this.getStyleClass().add("movie-cell");
-            title.setText(movie.getTitle());
+            title.setText(movie.title());
             detail.setText(
-                    movie.getDescription() != null
-                            ? movie.getDescription()
+                    movie.description() != null
+                            ? movie.description()
                             : "No description available"
             );
 
 
-            genres.setText(movie.getGenres().stream().map(Enum::name).collect(Collectors.joining(", ")));
+            genres.setText(movie.genres().stream().map(Enum::name).collect(Collectors.joining(", ")));
 
 
             // color scheme

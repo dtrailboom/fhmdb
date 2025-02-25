@@ -16,19 +16,14 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class HomeControllerTest {
     private HomeController homeController;
-    private List<Movie> movies;
     private final Movie bladeRunner = new Movie("Blade Runner", "Beschreibung von Blade Runner", List.of(ACTION));
     private final Movie coolWorld = new Movie("Cool World", "Beschreibung von Cool World", List.of(COMEDY));
     private final Movie inception = new Movie("Inception", "Beschreibung von Inception", List.of(SCIENCE_FICTION));
+    private List<Movie> movies = List.of(bladeRunner, coolWorld, inception);
 
     @BeforeEach
     void setUp() {
         homeController = new HomeController();
-        movies = List.of(
-                new Movie("Blade Runner", "Beschreibung von Blade Runner", List.of(ACTION)),
-                new Movie("Cool World", "Beschreibung von Cool World", List.of(COMEDY)),
-                new Movie("Inception", "Beschreibung von Inception", List.of(SCIENCE_FICTION))
-        );
     }
 
     //-----SORTING------
@@ -162,7 +157,7 @@ class HomeControllerTest {
     }
 
     @Test
-    void testSortMovies_LongTitles_desc() {
+    void sortMovies_LongTitles_desc() {
         Movie movie1 = new Movie("A Very Long Movie Title That Tests Sorting", "Description 1", List.of(ACTION));
         Movie movie2 = new Movie("Another Long Movie Title", "Description 2", List.of(ACTION));
         movies = List.of(movie2, movie1);
@@ -253,13 +248,12 @@ class HomeControllerTest {
     void testSearchMovies_SearchText_GenreNull() {
         //Wenn findet dann true
         var expected = List.of(bladeRunner);
-        var result = homeController.filterMovies(movies, "Runner",null);
+        var result = homeController.filterMovies(movies, "Runner", null);
         assertEquals(expected, result);
     }
 
     @Test
-    void testMatchesSearchQuery_WithEmptySearchText() {
-        //Wenn Suche leer ist, sollte Ergebnis immer true sein
+    void matchesSearchQuery_WithEmptySearchText_isTrue() {
         assertTrue(homeController.matchesSearchQuery(movies.get(2), ""));
     }
 

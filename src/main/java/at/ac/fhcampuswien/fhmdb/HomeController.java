@@ -73,19 +73,15 @@ public class HomeController implements Initializable {
 
         // Focus the search field when the app starts
         searchField.requestFocus();
-
     }
 
+    @FXML
     public void applyFilters() {
-        observableMovies.clear();
-
         var searchText = searchField.getText().toLowerCase().trim();
         var selectedGenre = genreComboBox.getSelectionModel().getSelectedItem();
         var filteredMovies = filterMovies(allMovies, searchText, selectedGenre);
 
-        observableMovies.addAll(filteredMovies);
-        //movieListView.refresh();
-
+        observableMovies.setAll(filteredMovies);
     }
 
     public List<Movie> filterMovies(List<Movie> movies, String searchText, Genre selectedGenre) {
@@ -93,7 +89,6 @@ public class HomeController implements Initializable {
                 .filter(movie -> matchesSearchQuery(movie, searchText))
                 .filter(movie -> matchesGenre(movie, selectedGenre))
                 .toList();
-
     }
 
     public boolean matchesSearchQuery(Movie movie, String searchText) {

@@ -248,4 +248,43 @@ class HomeControllerTest {
                 .allMatch(movie -> movie.genres().contains(genre),
                         "Every movie should contain the genre: " + genre);
     }
+
+    @Test
+    void testSearchMovies_SearchText_GenreNull() {
+        //Wenn findet dann true
+        var expected = List.of(bladeRunner);
+        var result = homeController.filterMovies(movies, "Runner",null);
+        assertEquals(expected, result);
+    }
+
+    @Test
+    void testMatchesSearchQuery_WithEmptySearchText() {
+        //Wenn Suche leer ist, sollte Ergebnis immer true sein
+        assertTrue(homeController.matchesSearchQuery(movies.get(2), ""));
+    }
+
+    @Test
+    void testMatchesSearchQuery_WithCaseInsensitiveSearch() {
+        //Überprüfe, dass die Suche nicht case sensitive ist
+        assertTrue(homeController.matchesSearchQuery(movies.get(2), "INCEPTION"));
+        assertTrue(homeController.matchesSearchQuery(movies.get(2), "Beschreibung von Inception"));
+    }
+
+    @Test
+    void testMatchesSearchQuery_WithTitleMatch() {
+        //Wenn Suche im Titel enthalten ist true
+        assertTrue(homeController.matchesSearchQuery(movies.get(2), "inception"));
+    }
+
+    @Test
+    void testMatchesSearchQuery_WithDescriptionMatch() {
+        //Wenn Suche in der Beschreibung enthalten ist, sollte das Ergebnis true sein
+        assertTrue(homeController.matchesSearchQuery(movies.get(2), "Beschreibung von Inception"));
+    }
+
+    @Test
+    void testMatchesSearchQuery_WithNoMatch() {
+        //Wenn Suche weder im Titel noch in der Beschreibung enthalten ist, sollte das Ergebnis false sein
+        assertFalse(homeController.matchesSearchQuery(movies.get(2), "comedy"));
+    }
 }

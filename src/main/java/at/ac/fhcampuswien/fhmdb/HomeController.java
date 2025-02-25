@@ -84,7 +84,7 @@ public class HomeController implements Initializable {
         var filteredMovies = filterMovies(allMovies, searchText, selectedGenre);
 
         observableMovies.addAll(filteredMovies);
-        movieListView.refresh();
+        //movieListView.refresh();
 
     }
 
@@ -96,13 +96,16 @@ public class HomeController implements Initializable {
 
     }
 
-    private boolean matchesSearchQuery(Movie movie, String searchText) {
+    public boolean matchesSearchQuery(Movie movie, String searchText) {
         return searchText.isEmpty() ||
-                movie.title().toLowerCase().contains(searchText) ||
-                movie.description().toLowerCase().contains(searchText);
+                movie.title().toLowerCase().contains(searchText.toLowerCase()) ||
+                movie.description().toLowerCase().contains(searchText.toLowerCase());
     }
 
     public boolean matchesGenre(Movie movie, Genre selectedGenre) {
+        if(selectedGenre == null){
+            return true;
+        }
         return selectedGenre.equals(NO_FILTER) || movie.genres() != null && movie.genres().contains(selectedGenre);
     }
 

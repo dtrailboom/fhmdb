@@ -23,7 +23,7 @@ public class MovieCell extends ListCell<Movie> {
     @Override
     public void updateItem(Movie movie, boolean empty) {
         super.updateItem(movie, empty);
-        System.out.println("Updating cell: " + (empty ? "empty" : movie.title())); // Debug
+      //  System.out.println("Updating cell: " + (empty ? "empty" : movie.title())); // Debug
 
         if (empty || movie == null) {
             setText(null);

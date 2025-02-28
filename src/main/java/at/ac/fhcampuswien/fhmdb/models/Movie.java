@@ -29,5 +29,4 @@ public record Movie(String title, String description, List<Genre> genres) {
 
         return movies;
     }
-
 }

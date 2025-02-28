@@ -10,6 +10,9 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 
@@ -22,19 +25,25 @@ import static at.ac.fhcampuswien.fhmdb.models.Genre.*;
 
 public class HomeController implements Initializable {
     @FXML
-    public JFXButton searchBtn;
+    public Button searchBtn;
 
     @FXML
     public TextField searchField;
 
     @FXML
-    public JFXListView<Movie> movieListView;
+    public ListView<Movie> movieListView;
 
     @FXML
-    public JFXComboBox<Genre> genreComboBox;
+    public ComboBox<Genre> genreComboBox;
 
     @FXML
-    public JFXButton sortBtn;
+    public ComboBox<Genre> releaseYearComboBox;
+
+    @FXML
+    public ComboBox<Genre> ratingComboBox;
+
+    @FXML
+    public Button sortBtn;
 
     public List<Movie> allMovies = Movie.initializeMovies();
 
@@ -55,21 +64,6 @@ public class HomeController implements Initializable {
                 HISTORY, HORROR, MUSICAL, MYSTERY, ROMANCE,
                 SCIENCE_FICTION, SPORT, THRILLER, WAR, WESTERN
         );
-        genreComboBox.setPromptText("Filter by Genre");
-
-        // Add event handlers
-        searchBtn.setOnAction(actionEvent -> applyFilters());
-        sortBtn.setOnAction(actionEvent -> applySort());
-
-        // Add Enter key support for the search field
-        searchField.setOnKeyPressed(keyEvent -> {
-            if (keyEvent.getCode() == KeyCode.ENTER) {
-                applyFilters(); // Trigger filtering
-            } else if (keyEvent.getCode() == KeyCode.ESCAPE) {
-                searchField.clear(); // Clear the search field
-                applyFilters(); // Reapply filters (to show all movies)
-            }
-        });
 
         // Focus the search field when the app starts
         searchField.requestFocus();
@@ -82,6 +76,19 @@ public class HomeController implements Initializable {
         var filteredMovies = filterMovies(allMovies, searchText, selectedGenre);
 
         observableMovies.setAll(filteredMovies);
+    }
+
+    @FXML
+    void applySort() {
+        if (sortBtn.getText().equals("Sort (asc)")) {
+            var sortedMovies = sortMovies(observableMovies, true);
+            observableMovies.setAll(sortedMovies);
+            sortBtn.setText("Sort (desc)");
+        } else {
+            var sortedMovies = sortMovies(observableMovies, false);
+            observableMovies.setAll(sortedMovies);
+            sortBtn.setText("Sort (asc)");
+        }
     }
 
     public List<Movie> filterMovies(List<Movie> movies, String searchText, Genre selectedGenre) {
@@ -102,19 +109,6 @@ public class HomeController implements Initializable {
             return true;
         }
         return selectedGenre.equals(NO_FILTER) || movie.genres() != null && movie.genres().contains(selectedGenre);
-    }
-
-    @FXML
-    void applySort() {
-        if (sortBtn.getText().equals("Sort (asc)")) {
-            var sortedMovies = sortMovies(observableMovies, true);
-            observableMovies.setAll(sortedMovies);
-            sortBtn.setText("Sort (desc)");
-        } else {
-            var sortedMovies = sortMovies(observableMovies, false);
-            observableMovies.setAll(sortedMovies);
-            sortBtn.setText("Sort (asc)");
-        }
     }
 
     public List<Movie> sortMovies(List<Movie> movies, boolean desc) {

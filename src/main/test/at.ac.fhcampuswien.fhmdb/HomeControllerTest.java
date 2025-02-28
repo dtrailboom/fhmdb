@@ -205,7 +205,7 @@ class HomeControllerTest {
 
     // Test case: Check if matchesGenre returns false when the genre is not ACTION.
     @Test
-    void matchesGenre_noFilter_matchFalse() {
+    void matchesGenre_noFilter_matchTrue() {
         boolean match = homeController.matchesGenre(bladeRunner, NO_FILTER);
         assertTrue(match);
     }

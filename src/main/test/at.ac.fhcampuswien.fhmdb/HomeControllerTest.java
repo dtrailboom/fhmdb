@@ -29,7 +29,7 @@ class HomeControllerTest {
     //-----SORTING------
 
     @Test
-    void testSortMoviesAsc() {
+    void sortMoviesAsc() {
         var expected = List.of(bladeRunner, coolWorld, inception);
         var result = homeController.sortMovies(movies, false);
 
@@ -37,7 +37,7 @@ class HomeControllerTest {
     }
 
     @Test
-    void testSortMoviesDesc() {
+    void sortMoviesDesc() {
         var expected = List.of(inception, coolWorld, bladeRunner);
         var result = homeController.sortMovies(movies, true);
 
@@ -45,12 +45,12 @@ class HomeControllerTest {
     }
 
     @Test
-    void testSortMovies_EmptyList() {
+    void sortMovies_EmptyList() {
         assertDoesNotThrow(() -> homeController.sortMovies(List.of(), false));
     }
 
     @Test
-    void testSortMovies_CaseInsensitive_asc() {
+    void sortMovies_CaseInsensitive_asc() {
         Movie movie1 = new Movie("Apple", "An Apple is tasty!", List.of(ACTION));
         Movie movie2 = new Movie("banana", "banana", List.of(ACTION));
         movies = List.of(movie2, movie1);
@@ -68,7 +68,7 @@ class HomeControllerTest {
             "Horror, DRAMA",
             "ActionMov, COMEDY"
     })
-    void testSortMovies_CaseInsensitive_desc() {
+    void sortMovies_CaseInsensitive_desc() {
         Movie movie1 = new Movie("Apple", "An Apple is tasty!", List.of(ACTION));
         Movie movie2 = new Movie("banana", "banana", List.of(ACTION));
         movies = List.of(movie2, movie1);
@@ -79,7 +79,7 @@ class HomeControllerTest {
     }
 
     @Test
-    void testSortMovies_StableSort_asc() {
+    void sortMovies_StableSort_asc() {
         Movie movie1 = new Movie("Inception", "Test Description", List.of(SCIENCE_FICTION));
         Movie movie2 = new Movie("Inception", "Test Description", List.of(SCIENCE_FICTION));
         movies = List.of(movie2, movie1);
@@ -89,7 +89,7 @@ class HomeControllerTest {
     }
 
     @Test
-    void testSortMovies_StableSort_desc() {
+    void sortMovies_StableSort_desc() {
         Movie movie1 = new Movie("Inception", "Test Description", List.of(SCIENCE_FICTION));
         Movie movie2 = new Movie("Inception", "Test Description", List.of(SCIENCE_FICTION));
         movies = List.of(movie2, movie1);
@@ -100,7 +100,7 @@ class HomeControllerTest {
     }
 
     @Test
-    void testSortMovies_EmptyTitles_asc() {
+    void sortMovies_EmptyTitles_asc() {
         Movie movie1 = new Movie("", "Test Description", List.of(ACTION));
         Movie movie2 = new Movie("Blade Runner", "Test Description", List.of(ACTION));
         movies = List.of(movie2, movie1);
@@ -111,7 +111,7 @@ class HomeControllerTest {
     }
 
     @Test
-    void testSortMovies_EmptyTitles_desc() {
+    void sortMovies_EmptyTitles_desc() {
         Movie movie1 = new Movie("", "Test Description", List.of(ACTION));
         Movie movie2 = new Movie("Blade Runner", "Test Description", List.of(ACTION));
         movies = List.of(movie2, movie1);
@@ -122,7 +122,7 @@ class HomeControllerTest {
     }
 
     @Test
-    void testSortMovies_NonAlphanumericCharacters_asc() {
+    void sortMovies_NonAlphanumericCharacters_asc() {
         Movie movie1 = new Movie("@Movie", "Description 1", List.of(ACTION));
         Movie movie2 = new Movie("!Movie", "Description 2", List.of(ACTION));
         Movie movie3 = new Movie("?Movie", "Description 3", List.of(ACTION));
@@ -134,7 +134,7 @@ class HomeControllerTest {
     }
 
     @Test
-    void testSortMovies_NonAlphanumericCharacters_desc() {
+    void sortMovies_NonAlphanumericCharacters_desc() {
         Movie movie1 = new Movie("@Movie", "Description 1", List.of(ACTION));
         Movie movie2 = new Movie("!Movie", "Description 2", List.of(ACTION));
         Movie movie3 = new Movie("?Movie", "Description 3", List.of(ACTION));
@@ -146,7 +146,7 @@ class HomeControllerTest {
     }
 
     @Test
-    void testSortMovies_LongTitles_asc() {
+    void sortMovies_LongTitles_asc() {
         Movie movie1 = new Movie("A Very Long Movie Title That Tests Sorting", "Description 1", List.of(ACTION));
         Movie movie2 = new Movie("Another Long Movie Title", "Description 2", List.of(ACTION));
         movies = List.of(movie2, movie1);
@@ -168,7 +168,7 @@ class HomeControllerTest {
     }
 
     @Test
-    void testSortMovies_SpecialCharacters_asc() {
+    void sortMovies_SpecialCharacters_asc() {
         Movie movie1 = new Movie("#Special Movie", "Description 1", List.of(ACTION));
         Movie movie2 = new Movie("123 Movie", "Description 2", List.of(ACTION));
         movies = List.of(movie2, movie1);
@@ -179,7 +179,7 @@ class HomeControllerTest {
     }
 
     @Test
-    void testSortMovies_SpecialCharacters_desc() {
+    void sortMovies_SpecialCharacters_desc() {
         Movie movie1 = new Movie("#Special Movie", "Description 1", List.of(ACTION));
         Movie movie2 = new Movie("123 Movie", "Description 2", List.of(ACTION));
         movies = List.of(movie2, movie1);

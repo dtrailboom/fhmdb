@@ -226,6 +226,12 @@ class HomeControllerTest {
                         "Every movie title should contain the search text: " + searchText);
     }
 
+    @ParameterizedTest
+    @CsvSource({
+            "Acti, ACTION",
+            "Dram, DRAMA",
+            "Com, COMEDY"
+    })
     void filterMovies_SearchMovieWithWrongGenre_matchFalse(String searchText, Genre genre) {
         List<Movie> filteredMovies = homeController.filterMovies(movies, searchText, genre);
 

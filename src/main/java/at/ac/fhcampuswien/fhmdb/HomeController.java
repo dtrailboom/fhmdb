@@ -41,13 +41,12 @@ public class HomeController implements Initializable {
     public Button sortBtn;
 
     private final MovieControllerApi movieControllerApi = new MovieControllerApi();
-    public List<Movie> allMovies = movieControllerApi.getMovies(null, null, null, null);
-
-    public ObservableList<Movie> observableMovies = FXCollections.observableArrayList();
+    private final List<Movie> allMovies = movieControllerApi.getMovies(null, null, null, null);
+    private final ObservableList<Movie> observableMovies = FXCollections.observableArrayList();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        observableMovies.addAll(allMovies); // Add all movies to the observable list
+        observableMovies.setAll(allMovies);
 
         // Initialize UI components
         movieListView.setItems(observableMovies);
@@ -58,8 +57,6 @@ public class HomeController implements Initializable {
 
         // Focus the search field when the app starts
         searchField.requestFocus();
-
-        var x = new MovieControllerApi();
     }
 
     @FXML

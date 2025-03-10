@@ -1,6 +1,5 @@
 package at.ac.fhcampuswien.fhmdb.ui;
 
-import at.ac.fhcampuswien.fhmdb.models.Movie;
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
@@ -10,6 +9,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
+import org.openapitools.client.model.Movie;
 
 import java.util.stream.Collectors;
 
@@ -32,15 +32,15 @@ public class MovieCell extends ListCell<Movie> {
 
         } else {
             this.getStyleClass().add("movie-cell");
-            title.setText(movie.title());
+            title.setText(movie.getTitle());
             detail.setText(
-                    movie.description() != null
-                            ? movie.description()
+                    movie.getDescription() != null
+                            ? movie.getDescription()
                             : "No description available"
             );
 
 
-            genres.setText(movie.genres().stream().map(Enum::name).collect(Collectors.joining(", ")));
+            genres.setText(movie.getGenres().stream().map(Enum::name).collect(Collectors.joining(", ")));
 
 
             // color scheme

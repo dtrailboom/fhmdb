@@ -1,0 +1,242 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Movie API",
+    "description": "Movie API for PRG2 CSDC",
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://springdoc.org"
+    },
+    "version": "V1"
+  },
+  "servers": [
+    {
+      "url": "https://prog2.fh-campuswien.ac.at/"
+    },
+    {
+      "url": "http://localhost:8080/"
+    }
+  ],
+  "paths": {
+    "/movies": {
+      "get": {
+        "tags": [
+          "movie-controller"
+        ],
+        "operationId": "getMovies",
+        "parameters": [
+          {
+            "name": "query",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": ""
+            }
+          },
+          {
+            "name": "genre",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "ACTION",
+                "ADVENTURE",
+                "ANIMATION",
+                "BIOGRAPHY",
+                "COMEDY",
+                "CRIME",
+                "DRAMA",
+                "DOCUMENTARY",
+                "FAMILY",
+                "FANTASY",
+                "HISTORY",
+                "HORROR",
+                "MUSICAL",
+                "MYSTERY",
+                "ROMANCE",
+                "SCIENCE_FICTION",
+                "SPORT",
+                "THRILLER",
+                "WAR",
+                "WESTERN"
+              ]
+            }
+          },
+          {
+            "name": "releaseYear",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "ratingFrom",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "format": "double"
+            }
+          }
+        ],
+        "responses": {
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Movie"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/movies/{id}": {
+      "get": {
+        "tags": [
+          "movie-controller"
+        ],
+        "operationId": "getMovieById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/Movie"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Movie": {
+        "type": "object",
+        "required": ["title", "description"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "genres": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "ACTION",
+                "ADVENTURE",
+                "ANIMATION",
+                "BIOGRAPHY",
+                "COMEDY",
+                "CRIME",
+                "DRAMA",
+                "DOCUMENTARY",
+                "FAMILY",
+                "FANTASY",
+                "HISTORY",
+                "HORROR",
+                "MUSICAL",
+                "MYSTERY",
+                "ROMANCE",
+                "SCIENCE_FICTION",
+                "SPORT",
+                "THRILLER",
+                "WAR",
+                "WESTERN"
+              ]
+            }
+          },
+          "releaseYear": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "description": {
+            "type": "string"
+          },
+          "imgUrl": {
+            "type": "string"
+          },
+          "lengthInMinutes": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "directors": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "writers": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "mainCast": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "rating": {
+            "type": "number",
+            "format": "double"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "basicScheme": {
+        "type": "http",
+        "scheme": "basic"
+      }
+    }
+  }
+}

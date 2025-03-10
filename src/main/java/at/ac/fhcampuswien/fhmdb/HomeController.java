@@ -1,11 +1,6 @@
 package at.ac.fhcampuswien.fhmdb;
 
-import at.ac.fhcampuswien.fhmdb.models.Genre;
-import at.ac.fhcampuswien.fhmdb.models.Movie;
 import at.ac.fhcampuswien.fhmdb.ui.MovieCell;
-import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXComboBox;
-import com.jfoenix.controls.JFXListView;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -14,14 +9,14 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
-import javafx.scene.input.KeyCode;
+import org.openapitools.client.api.MovieControllerApi;
+import org.openapitools.client.model.Movie;
+import org.openapitools.client.model.Movie.GenresEnum;
 
 import java.net.URL;
 import java.util.Comparator;
 import java.util.List;
 import java.util.ResourceBundle;
-
-import static at.ac.fhcampuswien.fhmdb.models.Genre.*;
 
 public class HomeController implements Initializable {
     @FXML
@@ -34,18 +29,19 @@ public class HomeController implements Initializable {
     public ListView<Movie> movieListView;
 
     @FXML
-    public ComboBox<Genre> genreComboBox;
+    public ComboBox<GenresEnum> genreComboBox;
 
     @FXML
-    public ComboBox<Genre> releaseYearComboBox;
+    public ComboBox<GenresEnum> releaseYearComboBox;
 
     @FXML
-    public ComboBox<Genre> ratingComboBox;
+    public ComboBox<GenresEnum> ratingComboBox;
 
     @FXML
     public Button sortBtn;
 
-    public List<Movie> allMovies = Movie.initializeMovies();
+    private final MovieControllerApi movieControllerApi = new MovieControllerApi();
+    public List<Movie> allMovies = movieControllerApi.getMovies(null, null, null, null);
 
     public ObservableList<Movie> observableMovies = FXCollections.observableArrayList();
 
@@ -58,22 +54,19 @@ public class HomeController implements Initializable {
         movieListView.setCellFactory(movieListView -> new MovieCell());
 
         // Add genre filter items
-        genreComboBox.getItems().addAll(
-                NO_FILTER, ACTION, ADVENTURE, ANIMATION, BIOGRAPHY, COMEDY,
-                CRIME, DRAMA, DOCUMENTARY, FAMILY, FANTASY,
-                HISTORY, HORROR, MUSICAL, MYSTERY, ROMANCE,
-                SCIENCE_FICTION, SPORT, THRILLER, WAR, WESTERN
-        );
+        genreComboBox.getItems().setAll(GenresEnum.values());
 
         // Focus the search field when the app starts
         searchField.requestFocus();
+
+        var x = new MovieControllerApi();
     }
 
     @FXML
     public void applyFilters() {
         var searchText = searchField.getText().toLowerCase().trim();
-        var selectedGenre = genreComboBox.getSelectionModel().getSelectedItem();
-        var filteredMovies = filterMovies(allMovies, searchText, selectedGenre);
+        var selectedGenresEnum = genreComboBox.getSelectionModel().getSelectedItem();
+        var filteredMovies = filterMovies(allMovies, searchText, selectedGenresEnum);
 
         observableMovies.setAll(filteredMovies);
     }
@@ -91,31 +84,28 @@ public class HomeController implements Initializable {
         }
     }
 
-    public List<Movie> filterMovies(List<Movie> movies, String searchText, Genre selectedGenre) {
+    public List<Movie> filterMovies(List<Movie> movies, String searchText, GenresEnum selectedGenresEnum) {
         return movies.stream()
                 .filter(movie -> matchesSearchQuery(movie, searchText))
-                .filter(movie -> matchesGenre(movie, selectedGenre))
+                .filter(movie -> matchesGenre(movie, selectedGenresEnum))
                 .toList();
     }
 
     public boolean matchesSearchQuery(Movie movie, String searchText) {
         return searchText.isEmpty() ||
-                movie.title().toLowerCase().contains(searchText.toLowerCase()) ||
-                movie.description().toLowerCase().contains(searchText.toLowerCase());
+                movie.getTitle().toLowerCase().contains(searchText.toLowerCase()) ||
+                movie.getDescription().toLowerCase().contains(searchText.toLowerCase());
     }
 
-    public boolean matchesGenre(Movie movie, Genre selectedGenre) {
-        if(selectedGenre == null){
-            return true;
-        }
-        return selectedGenre.equals(NO_FILTER) || movie.genres() != null && movie.genres().contains(selectedGenre);
+    public boolean matchesGenre(Movie movie, GenresEnum selectedGenresEnum) {
+        return selectedGenresEnum == null || (movie.getGenres() != null && movie.getGenres().contains(selectedGenresEnum));
     }
 
     public List<Movie> sortMovies(List<Movie> movies, boolean desc) {
         if (desc) {
-            return movies.stream().sorted(Comparator.comparing(Movie::title).reversed()).toList();
+            return movies.stream().sorted(Comparator.comparing(Movie::getTitle).reversed()).toList();
         }
 
-        return movies.stream().sorted(Comparator.comparing(Movie::title)).toList();
+        return movies.stream().sorted(Comparator.comparing(Movie::getTitle)).toList();
     }
 }

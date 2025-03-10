@@ -1,24 +1,24 @@
 package at.ac.fhcampuswien.fhmdb;
 
-import at.ac.fhcampuswien.fhmdb.models.Genre;
-import at.ac.fhcampuswien.fhmdb.models.Movie;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.openapitools.client.model.Movie;
 
 import java.util.List;
 
-import static at.ac.fhcampuswien.fhmdb.models.Genre.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.openapitools.client.model.Movie.GenresEnum.*;
+import static org.openapitools.client.model.Movie.GenresEnum;
 
 class HomeControllerTest {
     private HomeController homeController;
-    private final Movie bladeRunner = new Movie("Blade Runner", "Beschreibung von Blade Runner", List.of(ACTION));
-    private final Movie coolWorld = new Movie("Cool World", "Beschreibung von Cool World", List.of(COMEDY));
-    private final Movie inception = new Movie("Inception", "Beschreibung von Inception", List.of(SCIENCE_FICTION));
+    private final Movie bladeRunner = new Movie().title("Blade Runner").description("Beschreibung von Blade Runner").genres(List.of(ACTION));
+    private final Movie coolWorld = new Movie().title("Cool World").description("Beschreibung von Cool World").genres(List.of(COMEDY));
+    private final Movie inception = new Movie().title("Inception").description("Beschreibung von Inception").genres(List.of(SCIENCE_FICTION));
     private List<Movie> movies = List.of(bladeRunner, coolWorld, inception);
 
     @BeforeEach
@@ -51,8 +51,8 @@ class HomeControllerTest {
 
     @Test
     void sortMovies_CaseInsensitive_asc() {
-        Movie movie1 = new Movie("Apple", "An Apple is tasty!", List.of(ACTION));
-        Movie movie2 = new Movie("banana", "banana", List.of(ACTION));
+        Movie movie1 = new Movie().title("Apple").description("An Apple is tasty!").genres(List.of(ACTION));
+        Movie movie2 = new Movie().title("banana").description("banana").genres(List.of(ACTION));
         movies = List.of(movie2, movie1);
         var expected = List.of(movie1, movie2);
         var result = homeController.sortMovies(movies, false);
@@ -69,8 +69,8 @@ class HomeControllerTest {
             "ActionMov, COMEDY"
     })
     void sortMovies_CaseInsensitive_desc() {
-        Movie movie1 = new Movie("Apple", "An Apple is tasty!", List.of(ACTION));
-        Movie movie2 = new Movie("banana", "banana", List.of(ACTION));
+        Movie movie1 = new Movie().title("Apple").description("An Apple is tasty!").genres(List.of(ACTION));
+        Movie movie2 = new Movie().title("banana").description("banana").genres(List.of(ACTION));
         movies = List.of(movie2, movie1);
         var expected = List.of(movie2, movie1);
         var result = homeController.sortMovies(movies, true);
@@ -80,8 +80,8 @@ class HomeControllerTest {
 
     @Test
     void sortMovies_StableSort_asc() {
-        Movie movie1 = new Movie("Inception", "Test Description", List.of(SCIENCE_FICTION));
-        Movie movie2 = new Movie("Inception", "Test Description", List.of(SCIENCE_FICTION));
+        Movie movie1 = new Movie().title("Inception").description("Test Description").genres(List.of(SCIENCE_FICTION));
+        Movie movie2 = new Movie().title("Inception").description("Test Description").genres(List.of(SCIENCE_FICTION));
         movies = List.of(movie2, movie1);
         var expected = List.of(movie1, movie2);
         var result = homeController.sortMovies(movies, false);
@@ -90,8 +90,8 @@ class HomeControllerTest {
 
     @Test
     void sortMovies_StableSort_desc() {
-        Movie movie1 = new Movie("Inception", "Test Description", List.of(SCIENCE_FICTION));
-        Movie movie2 = new Movie("Inception", "Test Description", List.of(SCIENCE_FICTION));
+        Movie movie1 = new Movie().title("Inception").description("Test Description").genres(List.of(SCIENCE_FICTION));
+        Movie movie2 = new Movie().title("Inception").description("Test Description").genres(List.of(SCIENCE_FICTION));
         movies = List.of(movie2, movie1);
         var expected = List.of(movie2, movie1);
         var result = homeController.sortMovies(movies, true);
@@ -101,8 +101,8 @@ class HomeControllerTest {
 
     @Test
     void sortMovies_EmptyTitles_asc() {
-        Movie movie1 = new Movie("", "Test Description", List.of(ACTION));
-        Movie movie2 = new Movie("Blade Runner", "Test Description", List.of(ACTION));
+        Movie movie1 = new Movie().title("").description("Test Description").genres(List.of(ACTION));
+        Movie movie2 = new Movie().title("Blade Runner").description("Test Description").genres(List.of(ACTION));
         movies = List.of(movie2, movie1);
         var expected = List.of(movie1, movie2);
         var result = homeController.sortMovies(movies, false);
@@ -112,8 +112,8 @@ class HomeControllerTest {
 
     @Test
     void sortMovies_EmptyTitles_desc() {
-        Movie movie1 = new Movie("", "Test Description", List.of(ACTION));
-        Movie movie2 = new Movie("Blade Runner", "Test Description", List.of(ACTION));
+        Movie movie1 = new Movie().title("").description("Test Description").genres(List.of(ACTION));
+        Movie movie2 = new Movie().title("Blade Runner").description("Test Description").genres(List.of(ACTION));
         movies = List.of(movie2, movie1);
         var expected = List.of(movie2, movie1);
         var result = homeController.sortMovies(movies, true);
@@ -123,9 +123,9 @@ class HomeControllerTest {
 
     @Test
     void sortMovies_NonAlphanumericCharacters_asc() {
-        Movie movie1 = new Movie("@Movie", "Description 1", List.of(ACTION));
-        Movie movie2 = new Movie("!Movie", "Description 2", List.of(ACTION));
-        Movie movie3 = new Movie("?Movie", "Description 3", List.of(ACTION));
+        Movie movie1 = new Movie().title("@Movie").description("Description 1").genres(List.of(ACTION));
+        Movie movie2 = new Movie().title("!Movie").description("Description 2").genres(List.of(ACTION));
+        Movie movie3 = new Movie().title("?Movie").description("Description 3").genres(List.of(ACTION));
         movies = List.of(movie2, movie3, movie1);
         var expected = List.of(movie2, movie3, movie1);
         var result = homeController.sortMovies(movies, false);
@@ -135,9 +135,9 @@ class HomeControllerTest {
 
     @Test
     void sortMovies_NonAlphanumericCharacters_desc() {
-        Movie movie1 = new Movie("@Movie", "Description 1", List.of(ACTION));
-        Movie movie2 = new Movie("!Movie", "Description 2", List.of(ACTION));
-        Movie movie3 = new Movie("?Movie", "Description 3", List.of(ACTION));
+        Movie movie1 = new Movie().title("@Movie").description("Description 1").genres(List.of(ACTION));
+        Movie movie2 = new Movie().title("!Movie").description("Description 2").genres(List.of(ACTION));
+        Movie movie3 = new Movie().title("?Movie").description("Description 3").genres(List.of(ACTION));
         movies = List.of(movie2, movie3, movie1);
         var expected = List.of(movie1, movie3, movie2);
         var result = homeController.sortMovies(movies, true);
@@ -147,8 +147,8 @@ class HomeControllerTest {
 
     @Test
     void sortMovies_LongTitles_asc() {
-        Movie movie1 = new Movie("A Very Long Movie Title That Tests Sorting", "Description 1", List.of(ACTION));
-        Movie movie2 = new Movie("Another Long Movie Title", "Description 2", List.of(ACTION));
+        Movie movie1 = new Movie().title("A Very Long Movie Title That Tests Sorting").description("Description 1").genres(List.of(ACTION));
+        Movie movie2 = new Movie().title("Another Long Movie Title").description("Description 2").genres(List.of(ACTION));
         movies = List.of(movie2, movie1);
         var result = homeController.sortMovies(movies, false);
         var expected = List.of(movie1, movie2);
@@ -158,8 +158,8 @@ class HomeControllerTest {
 
     @Test
     void sortMovies_LongTitles_desc() {
-        Movie movie1 = new Movie("A Very Long Movie Title That Tests Sorting", "Description 1", List.of(ACTION));
-        Movie movie2 = new Movie("Another Long Movie Title", "Description 2", List.of(ACTION));
+        Movie movie1 = new Movie().title("A Very Long Movie Title That Tests Sorting").description("Description 1").genres(List.of(ACTION));
+        Movie movie2 = new Movie().title("Another Long Movie Title").description("Description 2").genres(List.of(ACTION));
         movies = List.of(movie2, movie1);
         var result = homeController.sortMovies(movies, true);
         var expected = List.of(movie2, movie1);
@@ -169,8 +169,8 @@ class HomeControllerTest {
 
     @Test
     void sortMovies_SpecialCharacters_asc() {
-        Movie movie1 = new Movie("#Special Movie", "Description 1", List.of(ACTION));
-        Movie movie2 = new Movie("123 Movie", "Description 2", List.of(ACTION));
+        Movie movie1 = new Movie().title("#Special Movie").description("Description 1").genres(List.of(ACTION));
+        Movie movie2 = new Movie().title("123 Movie").description("Description 2").genres(List.of(ACTION));
         movies = List.of(movie2, movie1);
         var result = homeController.sortMovies(movies, false);
         var expected = List.of(movie1, movie2);
@@ -180,8 +180,8 @@ class HomeControllerTest {
 
     @Test
     void sortMovies_SpecialCharacters_desc() {
-        Movie movie1 = new Movie("#Special Movie", "Description 1", List.of(ACTION));
-        Movie movie2 = new Movie("123 Movie", "Description 2", List.of(ACTION));
+        Movie movie1 = new Movie().title("#Special Movie").description("Description 1").genres(List.of(ACTION));
+        Movie movie2 = new Movie().title("123 Movie").description("Description 2").genres(List.of(ACTION));
         movies = List.of(movie2, movie1);
         var result = homeController.sortMovies(movies, true);
         var expected = List.of(movie2, movie1);
@@ -206,7 +206,7 @@ class HomeControllerTest {
     // Test case: Check if matchesGenre returns false when the genre is not ACTION.
     @Test
     void matchesGenre_noFilter_matchTrue() {
-        boolean match = homeController.matchesGenre(bladeRunner, NO_FILTER);
+        boolean match = homeController.matchesGenre(bladeRunner, null);
         assertTrue(match);
     }
 
@@ -218,11 +218,11 @@ class HomeControllerTest {
             "Dram, DRAMA",
             "Com, COMEDY"
     })
-    void filterMovies_SearchMovieWithGenre_matchTrue(String searchText, Genre genre) {
+    void filterMovies_SearchMovieWithGenre_matchTrue(String searchText, GenresEnum genre) {
         List<Movie> filteredMovies = homeController.filterMovies(movies, searchText, genre);
 
         assertThat(filteredMovies)
-                .allMatch(movie -> movie.title().contains(searchText),
+                .allMatch(movie -> movie.getTitle().contains(searchText),
                         "Every movie title should contain the search text: " + searchText);
     }
 
@@ -232,21 +232,21 @@ class HomeControllerTest {
             "Dram, DRAMA",
             "Com, COMEDY"
     })
-    void filterMovies_SearchMovieWithWrongGenre_matchFalse(String searchText, Genre genre) {
+    void filterMovies_SearchMovieWithWrongGenre_matchFalse(String searchText, GenresEnum genre) {
         List<Movie> filteredMovies = homeController.filterMovies(movies, searchText, genre);
 
         assertThat(filteredMovies)
-                .noneMatch(movie -> movie.title().contains(searchText));
+                .noneMatch(movie -> movie.getTitle().contains(searchText));
     }
 
     // Parameterized test case: Check if an empty search string still correctly filters by genre.
     @ParameterizedTest
-    @EnumSource(value = Genre.class, names = {"DRAMA", "ACTION"})
-    void filterMovies_EmptySearchWithGenre_matchTrue(Genre genre) {
+    @EnumSource(value = GenresEnum.class, names = {"DRAMA", "ACTION"})
+    void filterMovies_EmptySearchWithGenre_matchTrue(GenresEnum genre) {
         List<Movie> filteredMovies = homeController.filterMovies(movies, " ", genre);
 
         assertThat(filteredMovies)
-                .allMatch(movie -> movie.genres().contains(genre),
+                .allMatch(movie -> movie.getGenres().contains(genre),
                         "Every movie should contain the genre: " + genre);
     }
 

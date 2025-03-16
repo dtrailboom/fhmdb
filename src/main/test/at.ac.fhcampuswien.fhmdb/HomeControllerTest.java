@@ -7,6 +7,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.openapitools.client.model.Movie;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -16,9 +17,9 @@ import static org.openapitools.client.model.Movie.GenresEnum;
 
 class HomeControllerTest {
     private HomeController homeController;
-    private final Movie bladeRunner = new Movie().title("Blade Runner").description("Beschreibung von Blade Runner").genres(List.of(ACTION));
-    private final Movie coolWorld = new Movie().title("Cool World").description("Beschreibung von Cool World").genres(List.of(COMEDY));
-    private final Movie inception = new Movie().title("Inception").description("Beschreibung von Inception").genres(List.of(SCIENCE_FICTION));
+    private final Movie bladeRunner = new Movie().title("Blade Runner").description("Beschreibung von Blade Runner").genres(List.of(ACTION)).directors(List.of("Ridley Scott")).releaseYear(1982);
+    private final Movie coolWorld = new Movie().title("Cool World").description("Beschreibung von Cool World").genres(List.of(COMEDY)).directors(List.of("Ralph Bakshi")).releaseYear(1992);
+    private final Movie inception = new Movie().title("Inception").description("Beschreibung von Inception").genres(List.of(SCIENCE_FICTION)).directors(List.of("Christopher Nolan")).releaseYear(2010);
     private List<Movie> movies = List.of(bladeRunner, coolWorld, inception);
 
     @BeforeEach
@@ -189,102 +190,82 @@ class HomeControllerTest {
         assertEquals(expected, result);
     }
 
-    // Test case: Check if matchesGenre correctly matches the movie genre when it is ACTION.
     @Test
-    void matchesGenre_genreAction_matchTrue() {
-        boolean match = homeController.matchesGenre(bladeRunner, ACTION);
-        assertTrue(match);
-    }
+    void countMoviesFrom_oneDirector_isOne(){
+        var movies = List.of(bladeRunner, inception, coolWorld);
+        var expected = 1;
 
-    // Test case: Check if matchesGenre correctly matches the movie genre when it is ACTION.
-    @Test
-    void matchesGenre_genreDrama_matchFalse() {
-        boolean match = homeController.matchesGenre(bladeRunner, DRAMA);
-        assertFalse(match);
-    }
-
-    // Test case: Check if matchesGenre returns false when the genre is not ACTION.
-    @Test
-    void matchesGenre_noFilter_matchTrue() {
-        boolean match = homeController.matchesGenre(bladeRunner, null);
-        assertTrue(match);
-    }
-
-    // Parameterized test case: Check if the movie search filters correctly by genre and title.
-    // The test runs with the specified pairs of search text and genre.
-    @ParameterizedTest
-    @CsvSource({
-            "Acti, ACTION",
-            "Dram, DRAMA",
-            "Com, COMEDY"
-    })
-    void filterMovies_SearchMovieWithGenre_matchTrue(String searchText, GenresEnum genre) {
-        List<Movie> filteredMovies = homeController.filterMovies(movies, searchText, genre);
-
-        assertThat(filteredMovies)
-                .allMatch(movie -> movie.getTitle().contains(searchText),
-                        "Every movie title should contain the search text: " + searchText);
-    }
-
-    @ParameterizedTest
-    @CsvSource({
-            "Acti, ACTION",
-            "Dram, DRAMA",
-            "Com, COMEDY"
-    })
-    void filterMovies_SearchMovieWithWrongGenre_matchFalse(String searchText, GenresEnum genre) {
-        List<Movie> filteredMovies = homeController.filterMovies(movies, searchText, genre);
-
-        assertThat(filteredMovies)
-                .noneMatch(movie -> movie.getTitle().contains(searchText));
-    }
-
-    // Parameterized test case: Check if an empty search string still correctly filters by genre.
-    @ParameterizedTest
-    @EnumSource(value = GenresEnum.class, names = {"DRAMA", "ACTION"})
-    void filterMovies_EmptySearchWithGenre_matchTrue(GenresEnum genre) {
-        List<Movie> filteredMovies = homeController.filterMovies(movies, " ", genre);
-
-        assertThat(filteredMovies)
-                .allMatch(movie -> movie.getGenres().contains(genre),
-                        "Every movie should contain the genre: " + genre);
+        assertEquals(expected, homeController.countMoviesFrom(movies, "Christopher Nolan"));
     }
 
     @Test
-    void testSearchMovies_SearchText_GenreNull() {
-        //Wenn findet dann true
-        var expected = List.of(bladeRunner);
-        var result = homeController.filterMovies(movies, "Runner", null);
-        assertEquals(expected, result);
+    void countMoviesFrom_noDirector_isZero(){
+        var movies = List.of(bladeRunner, inception, coolWorld);
+        var expected = 0;
+
+        assertEquals(expected, homeController.countMoviesFrom(movies, ""));
     }
 
     @Test
-    void matchesSearchQuery_WithEmptySearchText_isTrue() {
-        assertTrue(homeController.matchesSearchQuery(movies.get(2), ""));
+    void countMoviesFrom_directorWithoutMovie_isZero(){
+        var movies = List.of(bladeRunner, inception, coolWorld);
+        var expected = 0;
+
+        assertEquals(expected, homeController.countMoviesFrom(movies, "Steve Jobs"));
     }
 
     @Test
-    void testMatchesSearchQuery_WithCaseInsensitiveSearch() {
-        //Überprüfe, dass die Suche nicht case sensitive ist
-        assertTrue(homeController.matchesSearchQuery(movies.get(2), "INCEPTION"));
-        assertTrue(homeController.matchesSearchQuery(movies.get(2), "Beschreibung von Inception"));
+    void countMoviesFrom_emptyMovieList_isZero(){
+        var movies = new ArrayList<Movie>();
+        var expected = 0;
+
+        assertEquals(expected, homeController.countMoviesFrom(movies, "Christopher Nolan"));
     }
 
     @Test
-    void testMatchesSearchQuery_WithTitleMatch() {
-        //Wenn Suche im Titel enthalten ist true
-        assertTrue(homeController.matchesSearchQuery(movies.get(2), "inception"));
+    void getMoviesBetweenYears_emptyMovieList_isEmpty(){
+        var movies = new ArrayList<Movie>();
+        var expected = List.of();
+
+        assertEquals(expected, homeController.getMoviesBetweenYears(movies, 1990, 2004));
     }
 
     @Test
-    void testMatchesSearchQuery_WithDescriptionMatch() {
-        //Wenn Suche in der Beschreibung enthalten ist, sollte das Ergebnis true sein
-        assertTrue(homeController.matchesSearchQuery(movies.get(2), "Beschreibung von Inception"));
+    void getMoviesBetweenYears_noMatch_isEmpty(){
+        var movies = List.of(bladeRunner, inception, coolWorld);
+        var expected = List.of();
+
+        assertEquals(expected, homeController.getMoviesBetweenYears(movies, 1312, 1529));
     }
 
     @Test
-    void testMatchesSearchQuery_WithNoMatch() {
-        //Wenn Suche weder im Titel noch in der Beschreibung enthalten ist, sollte das Ergebnis false sein
-        assertFalse(homeController.matchesSearchQuery(movies.get(2), "comedy"));
+    void getMoviesBetweenYears_allMatch_movieListIsSame(){
+        var movies = List.of(bladeRunner, inception, coolWorld);
+
+        assertEquals(movies, homeController.getMoviesBetweenYears(movies, 1900, 2100));
+    }
+
+    @Test
+    void getMoviesBetweenYears_singleMatch_matchesMovie(){
+        var movies = List.of(bladeRunner, inception, coolWorld);
+        var expected = List.of(coolWorld);
+
+        assertEquals(expected, homeController.getMoviesBetweenYears(movies, 1992, 1993));
+    }
+
+    @Test
+    void getMoviesBetweenYears_startYearBiggerThanEndYear_noMatch(){
+        var movies = List.of(bladeRunner, inception, coolWorld);
+        var expected = List.of();
+
+        assertEquals(expected, homeController.getMoviesBetweenYears(movies, 1993, 1992));
+    }
+
+    @Test
+    void getMoviesBetweenYears_startYearEqualToEndYear_matchesMovie(){
+        var movies = List.of(bladeRunner, inception, coolWorld);
+        var expected = List.of(coolWorld);
+
+        assertEquals(expected, homeController.getMoviesBetweenYears(movies, 1992, 1992));
     }
 }

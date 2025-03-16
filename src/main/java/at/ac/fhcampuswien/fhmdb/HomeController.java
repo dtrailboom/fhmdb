@@ -17,6 +17,7 @@ import java.net.URL;
 import java.util.Comparator;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 public class HomeController implements Initializable {
     @FXML
@@ -63,7 +64,8 @@ public class HomeController implements Initializable {
     public void applyFilters() {
         var searchText = searchField.getText().toLowerCase().trim();
         var selectedGenresEnum = genreComboBox.getSelectionModel().getSelectedItem();
-        var filteredMovies = filterMovies(allMovies, searchText, selectedGenresEnum);
+        //extend by release year & rating
+        var filteredMovies = filterMovies(searchText, selectedGenresEnum);
 
         observableMovies.setAll(filteredMovies);
     }
@@ -81,21 +83,20 @@ public class HomeController implements Initializable {
         }
     }
 
-    public List<Movie> filterMovies(List<Movie> movies, String searchText, GenresEnum selectedGenresEnum) {
-        return movies.stream()
-                .filter(movie -> matchesSearchQuery(movie, searchText))
-                .filter(movie -> matchesGenre(movie, selectedGenresEnum))
-                .toList();
+    // add parameters for release year & rating
+    public List<Movie> filterMovies(String searchText, GenresEnum selectedGenresEnum) {
+//        movieControllerApi.getMovies(searchText, ...);
+        return null;
     }
 
-    public boolean matchesSearchQuery(Movie movie, String searchText) {
-        return searchText.isEmpty() ||
-                movie.getTitle().toLowerCase().contains(searchText.toLowerCase()) ||
-                movie.getDescription().toLowerCase().contains(searchText.toLowerCase());
+    // 4 additional methods here
+
+    public long countMoviesFrom(List<Movie> movies, String director) {
+        return movies.stream().filter(movie -> movie.getDirectors().contains(director)).count();
     }
 
-    public boolean matchesGenre(Movie movie, GenresEnum selectedGenresEnum) {
-        return selectedGenresEnum == null || (movie.getGenres() != null && movie.getGenres().contains(selectedGenresEnum));
+    public List<Movie> getMoviesBetweenYears(List<Movie> movies, int startYear, int endYear) {
+        return movies.stream().filter(movie -> movie.getReleaseYear() >= startYear && movie.getReleaseYear() <= endYear).collect(Collectors.toList());
     }
 
     public List<Movie> sortMovies(List<Movie> movies, boolean desc) {

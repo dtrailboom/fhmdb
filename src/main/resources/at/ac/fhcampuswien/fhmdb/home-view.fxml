@@ -32,8 +32,8 @@
          <Button fx:id="sortBtn" mnemonicParsing="false" onAction="#applySort" styleClass="background-yellow" text="Sort (asc)" />
          <TextField fx:id="searchField" onAction="#applyFilters" onKeyPressed="#applyFilters" prefHeight="25.0" prefWidth="170.0" promptText="Search FHMDb" />
          <ComboBox fx:id="genreComboBox" prefWidth="150.0" promptText="Filter by Genre" styleClass="filter-combo-box" />
-         <ComboBox fx:id="releaseYearComboBox" prefWidth="150.0" promptText="Filter by Release Year" styleClass="filter-combo-box" />
-         <ComboBox fx:id="ratingComboBox" prefWidth="150.0" promptText="Filter by Rating" styleClass="filter-combo-box" />
+         <TextField fx:id="releaseYearField" prefWidth="150.0" promptText="Filter by Release Year" />
+         <TextField fx:id="ratingField" prefWidth="150.0" promptText="Filter by Rating" />
          <Button fx:id="searchBtn" mnemonicParsing="false" onAction="#applyFilters" styleClass="background-yellow" text="Filter" />
       </children>
       <VBox.margin>

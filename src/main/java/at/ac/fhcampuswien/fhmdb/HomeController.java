@@ -14,6 +14,7 @@ import org.openapitools.client.model.Movie;
 import org.openapitools.client.model.Movie.GenresEnum;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -33,10 +34,10 @@ public class HomeController implements Initializable {
     public ComboBox<GenresEnum> genreComboBox;
 
     @FXML
-    public ComboBox<GenresEnum> releaseYearComboBox;
+    public TextField releaseYearField;
 
     @FXML
-    public ComboBox<GenresEnum> ratingComboBox;
+    public TextField ratingField;
 
     @FXML
     public Button sortBtn;
@@ -64,9 +65,10 @@ public class HomeController implements Initializable {
     public void applyFilters() {
         var searchText = searchField.getText().toLowerCase().trim();
         var selectedGenresEnum = genreComboBox.getSelectionModel().getSelectedItem();
-        //extend by release year & rating
-        var filteredMovies = filterMovies(searchText, selectedGenresEnum);
+        var releaseYear = releaseYearField.getText().trim();
+        var rating = ratingField.getText().trim();
 
+        var filteredMovies = filterMovies(searchText, selectedGenresEnum, releaseYear, rating);
         observableMovies.setAll(filteredMovies);
     }
 
@@ -84,10 +86,44 @@ public class HomeController implements Initializable {
     }
 
     // add parameters for release year & rating
-    public List<Movie> filterMovies(String searchText, GenresEnum selectedGenresEnum) {
-//        movieControllerApi.getMovies(searchText, ...);
+    public List<Movie> filterMovies(String searchText, GenresEnum selectedGenresEnum, String releaseYear, String rating)
+    {
+        String _searchText = (searchText != null && !searchText.trim().isEmpty()) ? searchText.trim() : null;
+        String _genre = (selectedGenresEnum != null) ? selectedGenresEnum.getValue() : null;
+        Integer _releaseYear = isValidYear(releaseYear);
+        Double _rating = isValidRating(rating);
+
+        // Hand over parameters, nullable are ignored
+        return movieControllerApi.getMovies(_searchText, _genre, _releaseYear, _rating);
+    }
+
+    public Double isValidRating(String rating)
+    {
+        try {
+            double _rating = Double.parseDouble(rating);
+            if (_rating >= 0 && _rating <= 10) {
+                return _rating;
+            }
+        } catch (NumberFormatException e) {
+            // exception gets nullable
+        }
         return null;
     }
+
+    public Integer isValidYear(String year)
+    {
+        try {
+            int _year = Integer.parseInt(year);
+            if (_year > 1900) {
+                return _year;
+            }
+        } catch (NumberFormatException e) {
+            // exception gets nullable
+        }
+        return null;
+    }
+
+
 
     // 4 additional methods here
 

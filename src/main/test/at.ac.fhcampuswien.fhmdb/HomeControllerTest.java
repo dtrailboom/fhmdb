@@ -2,9 +2,6 @@ package at.ac.fhcampuswien.fhmdb;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
-import org.junit.jupiter.params.provider.EnumSource;
 import org.openapitools.client.model.Movie;
 
 import java.util.ArrayList;
@@ -20,14 +17,17 @@ class HomeControllerTest {
     private final Movie bladeRunner = new Movie().title("Blade Runner").description("Beschreibung von Blade Runner").genres(List.of(ACTION)).directors(List.of("Ridley Scott")).releaseYear(1982);
     private final Movie coolWorld = new Movie().title("Cool World").description("Beschreibung von Cool World").genres(List.of(COMEDY)).directors(List.of("Ralph Bakshi")).releaseYear(1992);
     private final Movie inception = new Movie().title("Inception").description("Beschreibung von Inception").genres(List.of(SCIENCE_FICTION)).directors(List.of("Christopher Nolan")).releaseYear(2010);
-    private List<Movie> movies = List.of(bladeRunner, coolWorld, inception);
+    List<Movie> movies = new ArrayList<>();
 
     @BeforeEach
-    void setUp() {
+    void setUp()
+    {
+
         homeController = new HomeController();
+        movies = new ArrayList<>(List.of(bladeRunner, coolWorld, inception));
     }
 
-    //-----SORTING------
+    //-----SORTING------//
 
     @Test
     void sortMoviesAsc() {
@@ -61,14 +61,7 @@ class HomeControllerTest {
         assertEquals(expected, result);
     }
 
-    // Parameterized test case: Check if the movie search does not return incorrect genres.
-    // This ensures that the movie search doesn't incorrectly match a wrong genre.
-    @ParameterizedTest
-    @CsvSource({
-            "ComedyMovie, ACTION",
-            "Horror, DRAMA",
-            "ActionMov, COMEDY"
-    })
+@Test
     void sortMovies_CaseInsensitive_desc() {
         Movie movie1 = new Movie().title("Apple").description("An Apple is tasty!").genres(List.of(ACTION));
         Movie movie2 = new Movie().title("banana").description("banana").genres(List.of(ACTION));
@@ -189,6 +182,89 @@ class HomeControllerTest {
 
         assertEquals(expected, result);
     }
+//--END--//
+
+    //--FILTERING--//
+    @Test
+    void filterMovies_FilterBySearchText_True() {
+        var result = homeController.filterMovies("inception", null, "", "");
+        assertEquals("Inception", result.get(0).getTitle());
+    }
+
+    @Test
+    void filterMovies_FilterByGenre_True() {
+        var result = homeController.filterMovies("", GenresEnum.SCIENCE_FICTION, "", "");
+
+        assertEquals(4, result.size());
+    }
+
+    @Test
+    void filterMovies_FilterByYear_True() {
+        var result = homeController.filterMovies("", null, "1995", "");
+
+        assertEquals(3, result.size());
+    }
+
+    @Test
+    void filterMovies_FilterByRating_True() {
+        var result = homeController.filterMovies("", null, "", "9");
+        assertEquals(3, result.size());
+    }
+
+    @Test
+    void filterMovies_FilterBySearchAndGenre_True() {
+        var result = homeController.filterMovies("The lion", FAMILY, "", "");
+        assertEquals("The Lion King", result.get(0).getTitle());
+    }
+
+    @Test
+    void filterMovies_FilterByAll_True() {
+        var result = homeController.filterMovies("toy", GenresEnum.COMEDY, "1995", "8");
+
+        assertEquals(1, result.size());
+        assertEquals("Toy Story", result.get(0).getTitle());
+    }
+
+    @Test
+    void filterMovies_FilterByWrongSearch_isEmpty() {
+        var result = homeController.filterMovies("nonexistent", null, "", "");
+
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void filterMovies_FilterByNothing_getAll() {
+        var result = homeController.filterMovies("", null, "", "");
+
+        assertEquals(31, result.size());
+    }
+
+    @Test
+    void filterMovies_FilterByWInvalidYear_getAll() {
+        var result = homeController.filterMovies("", null, "abcd", "");
+        assertEquals(31, result.size());
+    }
+
+    @Test
+    void filterMovies_FilterByInvalidRating_getAll() {
+        var result = homeController.filterMovies("", null, "", "notanumber");
+        assertEquals(31, result.size());
+    }
+
+    @Test
+    void filterMovies_FilterByUnknownYear_getAll() {
+        var result = homeController.filterMovies( "", null, "1800", "");
+
+        assertEquals(31, result.size());
+    }
+
+    @Test
+    void filterMovies_FilterByOutOfRangeRating_getAll() {
+        var result = homeController.filterMovies( "", null, "", "15");
+
+        assertEquals(31, result.size());
+    }
+    //--END--//
 
     @Test
     void countMoviesFrom_oneDirector_isOne(){
@@ -268,4 +344,48 @@ class HomeControllerTest {
 
         assertEquals(expected, homeController.getMoviesBetweenYears(movies, 1992, 1992));
     }
+
+    //Year-Validation-Tests
+    @Test
+    void isValidYear_InboundYear_True(){
+        var result = homeController.isValidYear("2000");
+        assertEquals(2000, result);
+    }
+
+    @Test
+    void isValidYear_OutboundYear_False()
+    {
+        var result = homeController.isValidYear("1800");
+        assertNull(result);
+    }
+    @Test
+    void isValidYear_WrongFormat_False()
+    {
+        var result = homeController.isValidYear("abc");
+        assertNull(result);
+    }
+
+
+    //Rating-Validation-Tests
+    @Test
+    void isValidRating_InboundRating_True(){
+        var result = homeController.isValidRating("7");
+        assertEquals(7.0, result);
+    }
+
+    @Test
+    void isValidYear_OutboundRating_False()
+    {
+        var result = homeController.isValidRating("14");
+        assertNull(result);
+    }
+    @Test
+    void isValidRating_WrongFormat_False()
+    {
+        var result = homeController.isValidRating("abc");
+        assertNull(result);
+    }
+
+
+
 }

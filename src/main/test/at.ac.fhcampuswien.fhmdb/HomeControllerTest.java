@@ -412,6 +412,10 @@ class HomeControllerTest {
             System.out.println(mostPopularActor);
 
     }
+    @Test
+    public void getLongestMovieTitle() {  // Ob der größte movie title zurückgegeben wird.
+        assertEquals(12, homeController.getLongestMovieTitle(movies));
+    }
 
     @Test
     public void getMostPopularActor_TieBetweenActors() {

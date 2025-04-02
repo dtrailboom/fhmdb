@@ -159,7 +159,12 @@ public class HomeController implements Initializable {
                 .max(Map.Entry.comparingByValue())
                 .map(Map.Entry::getKey)
                 .orElse(null);
-
     }
-
+    public int getLongestMovieTitle(List<Movie> movies){
+        return movies.stream()
+                .map(Movie::getTitle) // Titel extrahieren
+                .max(Comparator.comparingInt(String::length)) // Längsten Titel suchen
+                .map(String::length)
+                .orElse(0); // Falls Liste leer ist, 0 zurückgeben
+    }
 }

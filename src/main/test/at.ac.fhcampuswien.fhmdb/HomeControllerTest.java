@@ -22,8 +22,7 @@ class HomeControllerTest {
     List<Movie> movies = new ArrayList<>();
 
     @BeforeEach
-    void setUp()
-    {
+    void setUp() {
 
         homeController = new HomeController();
         movies = new ArrayList<>(List.of(bladeRunner, coolWorld, inception));
@@ -63,7 +62,7 @@ class HomeControllerTest {
         assertEquals(expected, result);
     }
 
-@Test
+    @Test
     void sortMovies_CaseInsensitive_desc() {
         Movie movie1 = new Movie().title("Apple").description("An Apple is tasty!").genres(List.of(ACTION));
         Movie movie2 = new Movie().title("banana").description("banana").genres(List.of(ACTION));
@@ -255,21 +254,21 @@ class HomeControllerTest {
 
     @Test
     void filterMovies_FilterByUnknownYear_getAll() {
-        var result = homeController.filterMovies( "", null, "1800", "");
+        var result = homeController.filterMovies("", null, "1800", "");
 
         assertEquals(31, result.size());
     }
 
     @Test
     void filterMovies_FilterByOutOfRangeRating_getAll() {
-        var result = homeController.filterMovies( "", null, "", "15");
+        var result = homeController.filterMovies("", null, "", "15");
 
         assertEquals(31, result.size());
     }
     //--END--//
 
     @Test
-    void countMoviesFrom_oneDirector_isOne(){
+    void countMoviesFrom_oneDirector_isOne() {
         var movies = List.of(bladeRunner, inception, coolWorld);
         var expected = 1;
 
@@ -277,7 +276,7 @@ class HomeControllerTest {
     }
 
     @Test
-    void countMoviesFrom_noDirector_isZero(){
+    void countMoviesFrom_noDirector_isZero() {
         var movies = List.of(bladeRunner, inception, coolWorld);
         var expected = 0;
 
@@ -285,7 +284,7 @@ class HomeControllerTest {
     }
 
     @Test
-    void countMoviesFrom_directorWithoutMovie_isZero(){
+    void countMoviesFrom_directorWithoutMovie_isZero() {
         var movies = List.of(bladeRunner, inception, coolWorld);
         var expected = 0;
 
@@ -293,7 +292,7 @@ class HomeControllerTest {
     }
 
     @Test
-    void countMoviesFrom_emptyMovieList_isZero(){
+    void countMoviesFrom_emptyMovieList_isZero() {
         var movies = new ArrayList<Movie>();
         var expected = 0;
 
@@ -301,7 +300,7 @@ class HomeControllerTest {
     }
 
     @Test
-    void getMoviesBetweenYears_emptyMovieList_isEmpty(){
+    void getMoviesBetweenYears_emptyMovieList_isEmpty() {
         var movies = new ArrayList<Movie>();
         var expected = List.of();
 
@@ -309,7 +308,7 @@ class HomeControllerTest {
     }
 
     @Test
-    void getMoviesBetweenYears_noMatch_isEmpty(){
+    void getMoviesBetweenYears_noMatch_isEmpty() {
         var movies = List.of(bladeRunner, inception, coolWorld);
         var expected = List.of();
 
@@ -317,14 +316,14 @@ class HomeControllerTest {
     }
 
     @Test
-    void getMoviesBetweenYears_allMatch_movieListIsSame(){
+    void getMoviesBetweenYears_allMatch_movieListIsSame() {
         var movies = List.of(bladeRunner, inception, coolWorld);
 
         assertEquals(movies, homeController.getMoviesBetweenYears(movies, 1900, 2100));
     }
 
     @Test
-    void getMoviesBetweenYears_singleMatch_matchesMovie(){
+    void getMoviesBetweenYears_singleMatch_matchesMovie() {
         var movies = List.of(bladeRunner, inception, coolWorld);
         var expected = List.of(coolWorld);
 
@@ -332,7 +331,7 @@ class HomeControllerTest {
     }
 
     @Test
-    void getMoviesBetweenYears_startYearBiggerThanEndYear_noMatch(){
+    void getMoviesBetweenYears_startYearBiggerThanEndYear_noMatch() {
         var movies = List.of(bladeRunner, inception, coolWorld);
         var expected = List.of();
 
@@ -340,7 +339,7 @@ class HomeControllerTest {
     }
 
     @Test
-    void getMoviesBetweenYears_startYearEqualToEndYear_matchesMovie(){
+    void getMoviesBetweenYears_startYearEqualToEndYear_matchesMovie() {
         var movies = List.of(bladeRunner, inception, coolWorld);
         var expected = List.of(coolWorld);
 
@@ -349,20 +348,19 @@ class HomeControllerTest {
 
     //Year-Validation-Tests
     @Test
-    void isValidYear_InboundYear_True(){
+    void isValidYear_InboundYear_True() {
         var result = homeController.isValidYear("2000");
         assertEquals(2000, result);
     }
 
     @Test
-    void isValidYear_OutboundYear_False()
-    {
+    void isValidYear_OutboundYear_False() {
         var result = homeController.isValidYear("1800");
         assertNull(result);
     }
+
     @Test
-    void isValidYear_WrongFormat_False()
-    {
+    void isValidYear_WrongFormat_False() {
         var result = homeController.isValidYear("abc");
         assertNull(result);
     }
@@ -370,20 +368,19 @@ class HomeControllerTest {
 
     //Rating-Validation-Tests
     @Test
-    void isValidRating_InboundRating_True(){
+    void isValidRating_InboundRating_True() {
         var result = homeController.isValidRating("7");
         assertEquals(7.0, result);
     }
 
     @Test
-    void isValidYear_OutboundRating_False()
-    {
+    void isValidYear_OutboundRating_False() {
         var result = homeController.isValidRating("14");
         assertNull(result);
     }
+
     @Test
-    void isValidRating_WrongFormat_False()
-    {
+    void isValidRating_WrongFormat_False() {
         var result = homeController.isValidRating("abc");
         assertNull(result);
     }
@@ -391,27 +388,15 @@ class HomeControllerTest {
     //Most-Popular-Actor-Tests
     @Test
     public void getMostPopularActor() {  // Ob "Actor A" korrekt als häufigster Schauspieler zurückgegeben wird.
+        Movie movie1 = new Movie().title("Movie 1").mainCast(List.of("Actor A", "Actor B", "Actor C"));
+        Movie movie2 = new Movie().title("Movie 2").mainCast(List.of("Actor A", "Actor D", "Actor E"));
+        Movie movie3 = new Movie().title("Movie 3").mainCast(List.of("Actor A", "Actor B", "Actor F"));
+        List<Movie> movies = List.of(movie1, movie2, movie3);
 
-
-            Movie movie1 = new Movie();
-            movie1.setTitle("Movie 1");
-            movie1.setMainCast(Arrays.asList("Actor A", "Actor B", "Actor C"));
-
-            Movie movie2 = new Movie();
-            movie2.setTitle("Movie 2");
-            movie2.setMainCast(Arrays.asList("Actor A", "Actor D", "Actor E"));
-
-            Movie movie3 = new Movie();
-            movie3.setTitle("Movie 3");
-            movie3.setMainCast(Arrays.asList("Actor A", "Actor B", "Actor F"));
-
-            List<Movie> movies = Arrays.asList(movie1, movie2, movie3);
-
-            String mostPopularActor = homeController.getMostPopularActor(movies);
-            assertEquals("Actor A", mostPopularActor); // Actor A kommt am häufigsten vor
-            System.out.println(mostPopularActor);
-
+        String result = homeController.getMostPopularActor(movies);
+        assertEquals("Actor A", result); // Actor A kommt am häufigsten vor
     }
+
     @Test
     public void getLongestMovieTitle() {  // Ob der größte movie title zurückgegeben wird.
         assertEquals(12, homeController.getLongestMovieTitle(movies));
@@ -499,7 +484,6 @@ class HomeControllerTest {
         Assertions.assertEquals("Actor A", mostPopularActor); // Jetzt sollte Actor A der beliebteste Schauspieler sein
 
     }
-
 
 
 }

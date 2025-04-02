@@ -143,9 +143,7 @@ public class HomeController implements Initializable {
     }
 
     public String getMostPopularActor(List<Movie> movies) {
-        //    System.out.println("Movies received: " + movies); // Debug-Ausgabe
         if (movies == null || movies.isEmpty()) {
-        //    System.out.println("Movies list is null or empty");
             return null;
         }
 

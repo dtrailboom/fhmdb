@@ -365,7 +365,6 @@ class HomeControllerTest {
         assertNull(result);
     }
 
-
     //Rating-Validation-Tests
     @Test
     void isValidRating_InboundRating_True() {
@@ -474,5 +473,28 @@ class HomeControllerTest {
         assertEquals("Actor A", result); // Actor A kommt am häufigsten vor
     }
 
+    @Test
+    public void getLongestMovieTitle_LongestExists_LongestTitle() {  // Ob der größte movie title zurückgegeben wird.
+        assertEquals(12, homeController.getLongestMovieTitle(movies));
+    }
 
+    @Test
+    public void getLongestMovieTitle_SameLength_LongestTitle() {
+        Movie testmovie1 = new Movie().title("11").description("Beschreibung von Blade Runner").genres(List.of(ACTION)).directors(List.of("Ridley Scott")).releaseYear(1982);
+        Movie testmovie2 = new Movie().title("11111").description("Beschreibung von Cool World").genres(List.of(COMEDY)).directors(List.of("Ralph Bakshi")).releaseYear(1992);
+        Movie testmovie3 = new Movie().title("11111").description("Beschreibung von Inception").genres(List.of(SCIENCE_FICTION)).directors(List.of("Christopher Nolan")).releaseYear(2010);
+        List<Movie> tempMovies = new ArrayList<>();
+        tempMovies = new ArrayList<>(List.of(testmovie1, testmovie2, testmovie3));
+        assertEquals(5, homeController.getLongestMovieTitle(tempMovies));
+    }
+
+    @Test
+    public void getLongestMovieTitle_ZeroLength_LongestTitle() {
+        Movie testmovie1 = new Movie().title("").description("Beschreibung von Blade Runner").genres(List.of(ACTION)).directors(List.of("Ridley Scott")).releaseYear(1982);
+        Movie testmovie2 = new Movie().title("").description("Beschreibung von Cool World").genres(List.of(COMEDY)).directors(List.of("Ralph Bakshi")).releaseYear(1992);
+        Movie testmovie3 = new Movie().title("").description("Beschreibung von Inception").genres(List.of(SCIENCE_FICTION)).directors(List.of("Christopher Nolan")).releaseYear(2010);
+        List<Movie> tempMovies = new ArrayList<>();
+        tempMovies = new ArrayList<>(List.of(testmovie1, testmovie2, testmovie3));
+        assertEquals(0, homeController.getLongestMovieTitle(tempMovies));
+    }
 }

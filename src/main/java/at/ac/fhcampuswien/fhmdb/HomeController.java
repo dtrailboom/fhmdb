@@ -14,11 +14,10 @@ import org.openapitools.client.model.Movie;
 import org.openapitools.client.model.Movie.GenresEnum;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class HomeController implements Initializable {
     @FXML
@@ -142,4 +141,25 @@ public class HomeController implements Initializable {
 
         return movies.stream().sorted(Comparator.comparing(Movie::getTitle)).toList();
     }
+
+    public String getMostPopularActor(List<Movie> movies) {
+        //    System.out.println("Movies received: " + movies); // Debug-Ausgabe
+        if (movies == null || movies.isEmpty()) {
+        //    System.out.println("Movies list is null or empty");
+            return null;
+        }
+
+        return movies.stream()
+                .filter(Objects::nonNull)
+                .map(Movie::getMainCast)
+                .filter(Objects::nonNull)
+                .flatMap(cast -> cast.stream())
+                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
+                .entrySet().stream()
+                .max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey)
+                .orElse(null);
+
+    }
+
 }

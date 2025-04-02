@@ -1,10 +1,12 @@
 package at.ac.fhcampuswien.fhmdb;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openapitools.client.model.Movie;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -384,6 +386,114 @@ class HomeControllerTest {
     {
         var result = homeController.isValidRating("abc");
         assertNull(result);
+    }
+
+    //Most-Popular-Actor-Tests
+    @Test
+    public void getMostPopularActor() {  // Ob "Actor A" korrekt als häufigster Schauspieler zurückgegeben wird.
+
+
+            Movie movie1 = new Movie();
+            movie1.setTitle("Movie 1");
+            movie1.setMainCast(Arrays.asList("Actor A", "Actor B", "Actor C"));
+
+            Movie movie2 = new Movie();
+            movie2.setTitle("Movie 2");
+            movie2.setMainCast(Arrays.asList("Actor A", "Actor D", "Actor E"));
+
+            Movie movie3 = new Movie();
+            movie3.setTitle("Movie 3");
+            movie3.setMainCast(Arrays.asList("Actor A", "Actor B", "Actor F"));
+
+            List<Movie> movies = Arrays.asList(movie1, movie2, movie3);
+
+            String mostPopularActor = homeController.getMostPopularActor(movies);
+            assertEquals("Actor A", mostPopularActor); // Actor A kommt am häufigsten vor
+            System.out.println(mostPopularActor);
+
+    }
+
+    @Test
+    public void getMostPopularActor_TieBetweenActors() {
+        Movie movie1 = new Movie();
+        movie1.setMainCast(Arrays.asList("Actor A", "Actor B"));
+
+        Movie movie2 = new Movie();
+        movie2.setMainCast(Arrays.asList("Actor A", "Actor B"));
+
+        Movie movie3 = new Movie();
+        movie3.setMainCast(Arrays.asList("Actor C")); // Nur einmal vorkommend
+
+        List<Movie> movies = Arrays.asList(movie1, movie2, movie3);
+
+        String mostPopularActor = homeController.getMostPopularActor(movies);
+        assertTrue(mostPopularActor.equals("Actor A") || mostPopularActor.equals("Actor B"));
+        System.out.println(mostPopularActor);
+    }
+
+    @Test
+    public void getMostPopularActor_EmptyList() {
+
+        assertNull(homeController.getMostPopularActor(List.of()));
+    }
+
+    @Test
+    public void getMostPopularActor_NullList() {
+
+        assertNull(homeController.getMostPopularActor(null));
+    }
+
+    @Test
+
+    public void getMostPopularActor_OneMovieOneActor() {  // Ob die Methode funktioniert, wenn nur ein Schauspieler existiert.
+        Movie movie = new Movie();
+        movie.setMainCast(Arrays.asList("Solo Actor"));
+
+        List<Movie> movies = List.of(movie);
+
+        assertEquals("Solo Actor", homeController.getMostPopularActor(movies));
+    }
+
+    @Test
+    public void getMostPopularActor_MovieWithoutActors() {  // Ob die Methode robust ist, wenn ein Film keinen mainCast hat.
+        Movie movie = new Movie();
+        movie.setMainCast(List.of());
+
+        List<Movie> movies = List.of(movie);
+
+        assertNull(homeController.getMostPopularActor(movies));
+    }
+
+    @Test
+    public void getMostPopularActor_ListWithNullMovies() { // Falls die Liste Filme enthält, aber einige null sind, sollte das keine Fehler verursachen.
+        Movie movie = new Movie();
+        movie.setMainCast(Arrays.asList("Actor A"));
+
+        List<Movie> movies = Arrays.asList(movie, null);
+
+        assertEquals("Actor A", homeController.getMostPopularActor(movies));
+    }
+
+    @Test
+    public void getMostPopularActor_NullMainCast() { // Falls ein Film ein null-Feld für mainCast hat, sollte das keine NullPointerException verursachen.
+        // Film 1 mit Schauspielern
+        Movie movie1 = new Movie();
+        movie1.setMainCast(Arrays.asList("Actor A", "Actor B"));
+
+        // Film 2 mit keinem Schauspieler (null mainCast)
+        Movie movie2 = new Movie();
+        movie2.setMainCast(null);
+
+        // Film 3 mit einem Schauspieler
+        Movie movie3 = new Movie();
+        movie3.setMainCast(Arrays.asList("Actor A")); // Schauspieler A auch hier
+
+        List<Movie> movies = Arrays.asList(movie1, movie2, movie3);
+
+        String mostPopularActor = homeController.getMostPopularActor(movies);
+
+        Assertions.assertEquals("Actor A", mostPopularActor); // Jetzt sollte Actor A der beliebteste Schauspieler sein
+
     }
 
 

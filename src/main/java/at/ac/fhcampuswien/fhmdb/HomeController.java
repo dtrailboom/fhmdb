@@ -85,8 +85,7 @@ public class HomeController implements Initializable {
     }
 
     // add parameters for release year & rating
-    public List<Movie> filterMovies(String searchText, GenresEnum selectedGenresEnum, String releaseYear, String rating)
-    {
+    public List<Movie> filterMovies(String searchText, GenresEnum selectedGenresEnum, String releaseYear, String rating) {
         String _searchText = (searchText != null && !searchText.trim().isEmpty()) ? searchText.trim() : null;
         String _genre = (selectedGenresEnum != null) ? selectedGenresEnum.getValue() : null;
         Integer _releaseYear = isValidYear(releaseYear);
@@ -96,8 +95,7 @@ public class HomeController implements Initializable {
         return movieControllerApi.getMovies(_searchText, _genre, _releaseYear, _rating);
     }
 
-    public Double isValidRating(String rating)
-    {
+    public Double isValidRating(String rating) {
         try {
             double _rating = Double.parseDouble(rating);
             if (_rating >= 0 && _rating <= 10) {
@@ -109,8 +107,7 @@ public class HomeController implements Initializable {
         return null;
     }
 
-    public Integer isValidYear(String year)
-    {
+    public Integer isValidYear(String year) {
         try {
             int _year = Integer.parseInt(year);
             if (_year > 1900) {
@@ -121,10 +118,6 @@ public class HomeController implements Initializable {
         }
         return null;
     }
-
-
-
-    // 4 additional methods here
 
     public long countMoviesFrom(List<Movie> movies, String director) {
         return movies.stream().filter(movie -> movie.getDirectors().contains(director)).count();
@@ -158,11 +151,12 @@ public class HomeController implements Initializable {
                 .map(Map.Entry::getKey)
                 .orElse(null);
     }
-    public int getLongestMovieTitle(List<Movie> movies){
+
+    public int getLongestMovieTitle(List<Movie> movies) {
         return movies.stream()
-                .map(Movie::getTitle) // Titel extrahieren
-                .max(Comparator.comparingInt(String::length)) // Längsten Titel suchen
+                .map(Movie::getTitle)
+                .max(Comparator.comparingInt(String::length))
                 .map(String::length)
-                .orElse(0); // Falls Liste leer ist, 0 zurückgeben
+                .orElse(0);
     }
 }

@@ -397,11 +397,6 @@ class HomeControllerTest {
     }
 
     @Test
-    public void getLongestMovieTitle() {  // Ob der größte movie title zurückgegeben wird.
-        assertEquals(12, homeController.getLongestMovieTitle(movies));
-    }
-
-    @Test
     public void getMostPopularActor_TieBetweenActors_ReturnsRandomActor() {
         Movie movie1 = new Movie().title("Movie 1").mainCast(List.of("Actor A", "Actor B"));
         Movie movie2 = new Movie().title("Movie 2").mainCast(List.of("Actor A", "Actor B"));
@@ -471,6 +466,11 @@ class HomeControllerTest {
 
         String result = homeController.getMostPopularActor(movies);
         assertEquals("Actor A", result); // Actor A kommt am häufigsten vor
+    }
+
+    @Test
+    public void getLongestMovieTitle() {  // Ob der größte movie title zurückgegeben wird.
+        assertEquals(12, homeController.getLongestMovieTitle(movies));
     }
 
     @Test

@@ -3,6 +3,7 @@ package at.ac.fhcampuswien.fhmdb;
 import at.ac.fhcampuswien.fhmdb.ui.MovieCell;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -41,6 +42,7 @@ public class HomeController implements Initializable {
     @FXML
     public Button sortBtn;
 
+    private boolean isHomeView = true;
     private final MovieControllerApi movieControllerApi = new MovieControllerApi();
     private final List<Movie> allMovies = movieControllerApi.getMovies(null, null, null, null);
     private final ObservableList<Movie> observableMovies = FXCollections.observableArrayList();
@@ -51,7 +53,7 @@ public class HomeController implements Initializable {
 
         // Initialize UI components
         movieListView.setItems(observableMovies);
-        movieListView.setCellFactory(movieListView -> new MovieCell());
+        movieListView.setCellFactory(movieListView -> new MovieCell(true));
 
         // Add genre filter items
         genreComboBox.getItems().setAll(GenresEnum.values());
@@ -158,5 +160,22 @@ public class HomeController implements Initializable {
                 .max(Comparator.comparingInt(String::length))
                 .map(String::length)
                 .orElse(0);
+    }
+
+    public void showHome(ActionEvent actionEvent)
+    {
+        observableMovies.setAll(allMovies);
+        movieListView.setCellFactory(movieListView -> new MovieCell(true));
+    }
+
+    public void showWatchList(ActionEvent actionEvent)
+    {
+        refreshWatchlistView();
+    }
+
+    private void refreshWatchlistView() {
+       // ObservableList<Movie> watchlistMovies = FXCollections.observableArrayList(watchlistRepo.getWatchlist());
+        // movieListView.setItems(watchlistMovies);
+        //movieListView.setCellFactory(lv -> new MovieCell(false));
     }
 }

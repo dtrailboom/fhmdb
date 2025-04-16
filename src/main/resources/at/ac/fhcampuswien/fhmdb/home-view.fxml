@@ -1,47 +1,58 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ComboBox?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ListView?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
 
-<VBox prefHeight="331.0" prefWidth="570.0" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="at.ac.fhcampuswien.fhmdb.HomeController">
-   <HBox alignment="CENTER_LEFT" prefHeight="42.0" prefWidth="347.0" spacing="20.0" style="-fx-background-color: black;">
+<HBox prefHeight="600.0" prefWidth="900.0" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="at.ac.fhcampuswien.fhmdb.HomeController">
+
+   <!-- Left Navigation Sidebar -->
+   <VBox spacing="10.0" styleClass="background-black" prefWidth="120.0">
       <padding>
-         <Insets bottom="7.0" left="10.0" top="7.0" />
+         <Insets top="20.0" left="10.0" right="10.0" bottom="20.0"/>
       </padding>
       <children>
-         <Label style="-fx-background-color: F5C518;" text="FHMDb">
-            <font>
-               <Font name="Calibri Bold" size="24.0" />
-            </font>
-            <padding>
-               <Insets left="2.0" right="2.0" />
-            </padding>
-         </Label>
-         <Label styleClass="text-white" stylesheets="@styles.css" text="Welcome to FHMDb!" />
+         <Label text="Menu" style="-fx-text-fill: #F5C518; -fx-font-weight: bold; -fx-font-size: 16px;"/>
+         <Button text="Home" maxWidth="Infinity" onAction="#showHome" styleClass="background-yellow"/>
+         <Button text="Watchlist" maxWidth="Infinity" onAction="#showWatchList" styleClass="background-yellow"/>
+         <Button text="About" maxWidth="Infinity" styleClass="background-yellow"/>
       </children>
-   </HBox>
-   <HBox spacing="5.0" styleClass="background-black" stylesheets="@styles.css">
-      <children>
-         <Button fx:id="sortBtn" mnemonicParsing="false" onAction="#applySort" styleClass="background-yellow" text="Sort (asc)" />
-         <TextField fx:id="searchField" onAction="#applyFilters" onKeyPressed="#applyFilters" prefHeight="25.0" prefWidth="170.0" promptText="Search FHMDb" />
-         <ComboBox fx:id="genreComboBox" prefWidth="150.0" promptText="Filter by Genre" styleClass="filter-combo-box" />
-         <TextField fx:id="releaseYearField" prefWidth="150.0" promptText="Filter by Release Year" />
-         <TextField fx:id="ratingField" prefWidth="150.0" promptText="Filter by Rating" />
-         <Button fx:id="searchBtn" mnemonicParsing="false" onAction="#applyFilters" styleClass="background-yellow" text="Filter" />
-      </children>
-      <VBox.margin>
-         <Insets />
-      </VBox.margin>
-      <padding>
-         <Insets bottom="20.0" left="10.0" top="20.0" />
-      </padding>
-   </HBox>
-   <ListView fx:id="movieListView" prefHeight="200.0" prefWidth="200.0" styleClass="background-black" VBox.vgrow="ALWAYS" />
-</VBox>
+   </VBox>
+
+   <!-- Main Content Area -->
+   <VBox fx:id="mainContent" styleClass="background-black" spacing="10.0" HBox.hgrow="ALWAYS">
+      <!-- Header -->
+      <HBox alignment="CENTER_LEFT" prefHeight="42.0" spacing="20.0" styleClass="background-black" stylesheets="@styles.css">
+         <padding>
+            <Insets bottom="7.0" left="10.0" top="7.0" />
+         </padding>
+         <children>
+            <Label styleClass="text-yellow" text="FHMDb">
+               <font>
+                  <Font name="Calibri Bold" size="24.0" />
+               </font>
+            </Label>
+            <Label styleClass="text-white" text="Welcome to FHMDb!" />
+         </children>
+      </HBox>
+
+      <!-- Filterbar -->
+      <HBox spacing="10.0" styleClass="background-black" stylesheets="@styles.css" alignment="CENTER_LEFT">
+         <padding>
+            <Insets bottom="15.0" left="10.0" top="15.0" right="10.0"/>
+         </padding>
+         <children>
+            <Button fx:id="sortBtn" mnemonicParsing="false" onAction="#applySort" styleClass="background-yellow" text="Sort (asc)" />
+            <TextField fx:id="searchField" onAction="#applyFilters" onKeyPressed="#applyFilters" prefHeight="30.0" prefWidth="200.0" promptText="Search FHMDb" styleClass="filter-field"/>
+            <ComboBox fx:id="genreComboBox" prefWidth="150.0" promptText="Filter by Genre" styleClass="filter-combo-box" />
+            <TextField fx:id="releaseYearField" prefWidth="120.0" promptText="Filter by Release Year" styleClass="filter-field"/>
+            <TextField fx:id="ratingField" prefWidth="120.0" promptText="Filter by Rating" styleClass="filter-field"/>
+            <Button fx:id="searchBtn" mnemonicParsing="false" onAction="#applyFilters"  styleClass="background-yellow" text="Filter" />
+         </children>
+      </HBox>
+
+      <!-- Movie List -->
+      <ListView fx:id="movieListView" styleClass="background-black" VBox.vgrow="ALWAYS"/>
+   </VBox>
+</HBox>

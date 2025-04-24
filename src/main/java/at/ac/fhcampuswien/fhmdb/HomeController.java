@@ -1,5 +1,7 @@
 package at.ac.fhcampuswien.fhmdb;
 
+import at.ac.fhcampuswien.fhmdb.exceptions.DataBaseException;
+import at.ac.fhcampuswien.fhmdb.persistence.DatabaseManager;
 import at.ac.fhcampuswien.fhmdb.ui.MovieCell;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -60,6 +62,7 @@ public class HomeController implements Initializable {
 
         // Focus the search field when the app starts
         searchField.requestFocus();
+
     }
 
     @FXML

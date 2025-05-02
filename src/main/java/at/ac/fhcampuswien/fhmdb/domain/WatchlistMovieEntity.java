@@ -7,10 +7,10 @@ import com.j256.ormlite.table.DatabaseTable;
 public class WatchlistMovieEntity {
 
     @DatabaseField(generatedId = true)
-    private long id;
+    public long id;
 
     @DatabaseField(canBeNull = false)
-    private String apiId;  // Verweist auf den API-ID des Movies
+    public String apiId;  // Verweist auf den API-ID des Movies
 
     public WatchlistMovieEntity() {}
 

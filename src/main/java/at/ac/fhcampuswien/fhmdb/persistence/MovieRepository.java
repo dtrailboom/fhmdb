@@ -21,6 +21,7 @@ public class MovieRepository {
 
 
     public MovieRepository() throws DataBaseException, SQLException {
+
         createConnectionSource();
         dao = DaoManager.createDao(connectionSource, MovieEntity.class);
     }
@@ -42,7 +43,8 @@ public class MovieRepository {
 
     private void createConnectionSource() throws DataBaseException {
         try {
-            databaseManager = new DatabaseManager();
+            databaseManager = DatabaseManager.getInstance();
+            connectionSource= databaseManager.getConnectionSource();
 
         } catch (DataBaseException e) {
             throw new DataBaseException(e.getMessage());
@@ -52,7 +54,7 @@ public class MovieRepository {
 
     //Get movies from db
     public List<MovieEntity> getAllMovies() throws SQLException {
-        return databaseManager.movieDao.queryForAll();
+        return databaseManager.getMovieDao().queryForAll();
     }
 
     //insert or update
@@ -61,7 +63,7 @@ public class MovieRepository {
         List<MovieEntity> movieEntityList = MovieEntity.fromMovies(moviesToAdd);
         int count=0;
         for (MovieEntity movieEntity : movieEntityList) {
-            Dao.CreateOrUpdateStatus ret = databaseManager.movieDao.createOrUpdate(movieEntity);
+            Dao.CreateOrUpdateStatus ret = databaseManager.getMovieDao().createOrUpdate(movieEntity);
             count++;
         }
         return count;
@@ -69,7 +71,7 @@ public class MovieRepository {
 
     public int removeAll() throws SQLException {
         List<MovieEntity> listToDelete = getAllMovies();
-        return databaseManager.movieDao.delete(listToDelete);
+        return databaseManager.getMovieDao().delete(listToDelete);
     }
 
     public MovieEntity getMovieByApiId(String apiId) throws SQLException {

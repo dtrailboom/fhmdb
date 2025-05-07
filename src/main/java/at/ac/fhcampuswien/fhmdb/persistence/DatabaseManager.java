@@ -17,6 +17,7 @@ import java.sql.Statement;
 @Getter
 public class DatabaseManager {
     private static final String DB_URL = "jdbc:h2:file:./db/fhmdb";
+    @Getter
     private ConnectionSource connectionSource = null;
     private final Dao<WatchlistMovieEntity, Long> watchlistMovieDao;
     private final Dao<MovieEntity, Long> movieDao;
@@ -84,7 +85,6 @@ public class DatabaseManager {
             }
         }
     }
-
 
     private void dropTables() throws SQLException {
         TableUtils.dropTable(connectionSource, WatchlistMovieEntity.class, true);

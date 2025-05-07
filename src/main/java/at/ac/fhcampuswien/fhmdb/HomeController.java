@@ -64,7 +64,7 @@ public class HomeController implements Initializable {
 
     private final ClickEventHandler<Movie> removeFromWatchlistClicked = movie -> {
         try {
-            WatchlistRepository.getInstance().removeFromWatchlist(movie.getId().toString());
+            WatchlistRepository.getInstance().removefromWatchlist(movie.getId().toString());
             if (!isHomeView) {
                 refreshWatchlistView();
             }

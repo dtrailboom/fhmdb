@@ -15,6 +15,7 @@ import java.util.List;
 
 public class WatchlistRepository {
     private DatabaseManager databaseManager;
+    private static  WatchlistRepository instance= null;
 
 
     public WatchlistRepository() throws DataBaseException, SQLException {
@@ -28,34 +29,36 @@ public class WatchlistRepository {
 
     //get all watchlist movies from db
     public List<WatchlistMovieEntity> getWatchlist() throws SQLException {
-        return databaseManager.watchlistMovieDao.queryForAll();
+        return databaseManager.getWatchlistMovieDao().queryForAll();
     }
 
     //insert or update
     public void addToWatchlist(WatchlistMovieEntity entityToAdd) throws SQLException {
-        databaseManager.watchlistMovieDao.createOrUpdate(entityToAdd);
+        databaseManager.getWatchlistMovieDao().createOrUpdate(entityToAdd);
     }
 
     //delete all WatchlistMovieEntity from list
     public int removefromWatchlist(String apiId) throws SQLException {
         //load entry
-        List<WatchlistMovieEntity> foundList = databaseManager.watchlistMovieDao.queryForEq("apiId", apiId);
+        List<WatchlistMovieEntity> foundList = databaseManager.getWatchlistMovieDao().queryForEq("apiId", apiId);
 
         //if not found then return 0
         if (foundList.isEmpty() == true){
             return 0;
-        } else {
-            WatchlistMovieEntity first = foundList.getFirst();     //there can only be one because of id
+        }
+        else
+        {
+            WatchlistMovieEntity first = foundList.get(0);     //there can only be one because of id
 
             //first delete
-            return databaseManager.watchlistMovieDao.delete(first);
+            return databaseManager.getWatchlistMovieDao().delete(first);
         }
     }
 
     public void clearWatchlist() throws SQLException {
         try
         {
-            dao.deleteBuilder().delete();
+            databaseManager.getWatchlistMovieDao().deleteBuilder().delete();
         }
         catch (SQLException e)
         {
@@ -72,8 +75,10 @@ public class WatchlistRepository {
             {
                 instance = new WatchlistRepository();
             }
-            catch (DataBaseException e) {
-                System.out.println("Error getting instance of WatchlistRepository: " + e.getMessage());
+            catch (SQLException e) {
+                System.out.println("SQL-Error getting instance of WatchlistRepository: " + e.getMessage());
+            } catch (DataBaseException e) {
+                System.out.println("Database-Error getting instance of WatchlistRepository: " + e.getMessage());
             }
         }
         return instance;

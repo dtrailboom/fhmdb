@@ -14,69 +14,41 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class WatchlistRepository {
-    private static final String DB_URL = "jdbc:h2:file:./db/fhmdb";     //besser irgendwo public
-    private ConnectionSource connectionSource = null;
-    private Dao<WatchlistMovieEntity, Integer> dao;
-    private static WatchlistRepository instance;
+    private DatabaseManager databaseManager;
 
 
-    public int size() throws SQLException {
-        return (int) dao.countOf();
-    }
-
-    public WatchlistRepository() throws DataBaseException {
+    public WatchlistRepository() throws DataBaseException, SQLException {
         try {
-            this.dao = DaoManager.createDao(
-                    DatabaseManager.getInstance().getConnectionSource(), // Wiederverwendung des DB-Managers
-                    WatchlistMovieEntity.class
-            );
-        } catch (SQLException e) {
-            throw new DataBaseException("DAO creation failed", e);
-        }
-    }
+            databaseManager = new DatabaseManager();
 
-
-    private void createConnectionSource() throws DataBaseException {
-        try {
-            connectionSource = new JdbcConnectionSource(DB_URL);
-        } catch (SQLException e) {
+        } catch (DataBaseException e) {
             throw new DataBaseException(e.getMessage());
         }
     }
+
     //get all watchlist movies from db
     public List<WatchlistMovieEntity> getWatchlist() throws SQLException {
-        return dao.queryForAll();
-
+        return databaseManager.watchlistMovieDao.queryForAll();
     }
 
     //insert or update
-    public void addToWatchlist(WatchlistMovieEntity entity) throws SQLException {
-        // check if movie already is in watchlist
-        if (dao.queryForEq("apiId", entity.getApiId()).isEmpty()) {
-            dao.create(entity);
-        }
-    }
-
-    public WatchlistMovieEntity getMovieByApiId(String apiId) throws SQLException
-    {
-        return dao.queryBuilder()
-                .where().eq("apiId", apiId)
-                .queryForFirst();
+    public void addToWatchlist(WatchlistMovieEntity entityToAdd) throws SQLException {
+        databaseManager.watchlistMovieDao.createOrUpdate(entityToAdd);
     }
 
     //delete all WatchlistMovieEntity from list
-    public int removeFromWatchlist(String apiId) throws SQLException {
+    public int removefromWatchlist(String apiId) throws SQLException {
         //load entry
-        List<WatchlistMovieEntity> foundList = dao.queryForEq("apiId", apiId);
+        List<WatchlistMovieEntity> foundList = databaseManager.watchlistMovieDao.queryForEq("apiId", apiId);
 
         //if not found then return 0
         if (foundList.isEmpty() == true){
             return 0;
         } else {
-            WatchlistMovieEntity first = foundList.get(0);   //there can only be one because of id
+            WatchlistMovieEntity first = foundList.getFirst();     //there can only be one because of id
 
             //first delete
-            return dao.delete(first);
+            return databaseManager.watchlistMovieDao.delete(first);
         }
     }
 

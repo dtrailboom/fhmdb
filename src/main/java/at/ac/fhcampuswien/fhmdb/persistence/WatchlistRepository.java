@@ -12,37 +12,33 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class WatchlistRepository {
-    private static final String DB_URL = "jdbc:h2:file:./db/fhmdb";     //besser irgendwo public
-    private ConnectionSource connectionSource = null;
-    private Dao<WatchlistMovieEntity, Integer> dao;
+    private DatabaseManager databaseManager;
+
 
     public WatchlistRepository() throws DataBaseException, SQLException {
-        createConnectionSource();
-        dao = DaoManager.createDao(connectionSource, WatchlistMovieEntity.class);
-    }
-
-    private void createConnectionSource() throws DataBaseException {
         try {
-            connectionSource = new JdbcConnectionSource(DB_URL);
-        } catch (SQLException e) {
+            databaseManager = new DatabaseManager();
+
+        } catch (DataBaseException e) {
             throw new DataBaseException(e.getMessage());
         }
     }
 
+
     //get all watchlist movies from db
     public List<WatchlistMovieEntity> getWatchlist() throws SQLException {
-        return dao.queryForAll();
+        return databaseManager.watchlistMovieDao.queryForAll();
     }
 
     //insert or update
     public void addToWatchlist(WatchlistMovieEntity entityToAdd) throws SQLException {
-        dao.createOrUpdate(entityToAdd);
+        databaseManager.watchlistMovieDao.createOrUpdate(entityToAdd);
     }
 
     //delete all WatchlistMovieEntity from list
     public int removefromWatchlist(String apiId) throws SQLException {
         //load entry
-        List<WatchlistMovieEntity> foundList = dao.queryForEq("apiId", apiId);
+        List<WatchlistMovieEntity> foundList = databaseManager.watchlistMovieDao.queryForEq("apiId", apiId);
 
         //if not found then return 0
         if (foundList.isEmpty() == true){
@@ -51,7 +47,7 @@ public class WatchlistRepository {
             WatchlistMovieEntity first = foundList.getFirst();     //there can only be one because of id
 
             //first delete
-            return dao.delete(first);
+            return databaseManager.watchlistMovieDao.delete(first);
         }
     }
 }

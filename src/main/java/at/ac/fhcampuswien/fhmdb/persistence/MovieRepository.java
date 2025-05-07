@@ -13,27 +13,21 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class MovieRepository {
-    private static final String DB_URL = "jdbc:h2:file:./db/fhmdb";     //besser irgendwo public
-    private ConnectionSource connectionSource = null;
-    private Dao<MovieEntity, Integer> dao;
+    private DatabaseManager databaseManager;
 
-
-    public MovieRepository() throws DataBaseException, SQLException {
-        createConnectionSource();
-        dao = DaoManager.createDao(connectionSource, MovieEntity.class);
-    }
-
-    private void createConnectionSource() throws DataBaseException {
+    public MovieRepository() throws DataBaseException {
         try {
-            connectionSource = new JdbcConnectionSource(DB_URL);
-        } catch (SQLException e) {
+            databaseManager = new DatabaseManager();
+
+        } catch (DataBaseException e) {
             throw new DataBaseException(e.getMessage());
         }
     }
 
+
     //Get movies from db
     public List<MovieEntity> getAllMovies() throws SQLException {
-        return dao.queryForAll();
+        return databaseManager.movieDao.queryForAll();
     }
 
     //insert or update
@@ -42,7 +36,7 @@ public class MovieRepository {
         List<MovieEntity> movieEntityList = MovieEntity.fromMovies(moviesToAdd);
         int count=0;
         for (MovieEntity movieEntity : movieEntityList) {
-            Dao.CreateOrUpdateStatus ret = dao.createOrUpdate(movieEntity);
+            Dao.CreateOrUpdateStatus ret = databaseManager.movieDao.createOrUpdate(movieEntity);
             count++;
         }
         return count;
@@ -50,6 +44,6 @@ public class MovieRepository {
 
     public int removeAll() throws SQLException {
         List<MovieEntity> listToDelete = getAllMovies();
-        return dao.delete(listToDelete);
+        return databaseManager.movieDao.delete(listToDelete);
     }
 }

@@ -14,11 +14,23 @@ import java.sql.SQLException;
 
 @Getter
 public class DatabaseManager {
-    private static final String DB_URL = "jdbc:h2:file:./db/fhmdb";
+    public static final String DB_URL = "jdbc:h2:file:./db/fhmdb";
     private ConnectionSource connectionSource = null;
-    private final Dao<WatchlistMovieEntity, Long> watchlistMovieDao;
-    private final Dao<MovieEntity, Long> movieDao;
+    public final Dao<WatchlistMovieEntity, Long> watchlistMovieDao;
+    public final Dao<MovieEntity, Long> movieDao;
 
+    //private Instanzpointer zeigt auf sich selbst
+    //private static DatabaseManager myInstance;
+
+
+//    public static DatabaseManager getInstance() throws DataBaseException {
+//        if (myInstance == null) {
+//            myInstance= new DatabaseManager();
+//        }
+//        return myInstance;
+//    }
+
+    //private DatabaseManager() throws DataBaseException {
     public DatabaseManager() throws DataBaseException {
         try {
             createConnectionSource();

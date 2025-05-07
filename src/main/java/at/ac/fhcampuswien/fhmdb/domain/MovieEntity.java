@@ -113,6 +113,7 @@ public class MovieEntity {
 
     }
 
+
 // GETTER Methoden
 
     public long getId() {
@@ -148,4 +149,5 @@ public class MovieEntity {
     public double getRating() {
         return rating;
     }
+
 }

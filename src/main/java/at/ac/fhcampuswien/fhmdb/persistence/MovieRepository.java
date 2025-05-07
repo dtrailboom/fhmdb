@@ -16,11 +16,27 @@ public class MovieRepository {
     private static final String DB_URL = "jdbc:h2:file:./db/fhmdb";     //besser irgendwo public
     private ConnectionSource connectionSource = null;
     private Dao<MovieEntity, Integer> dao;
+    private static MovieRepository instance;
 
 
     public MovieRepository() throws DataBaseException, SQLException {
         createConnectionSource();
         dao = DaoManager.createDao(connectionSource, MovieEntity.class);
+    }
+
+    public static MovieRepository getInstance()  {
+
+        if (instance == null)
+        {
+            try
+            {
+                instance = new MovieRepository();
+            }
+            catch (SQLException | DataBaseException e) {
+                System.out.println("Error getting instance of MovieRepository: " + e.getMessage());
+            }
+        }
+        return instance;
     }
 
     private void createConnectionSource() throws DataBaseException {
@@ -51,5 +67,11 @@ public class MovieRepository {
     public int removeAll() throws SQLException {
         List<MovieEntity> listToDelete = getAllMovies();
         return dao.delete(listToDelete);
+    }
+
+    public MovieEntity getMovieByApiId(String apiId) throws SQLException {
+        return dao.queryBuilder()
+                .where().eq("apiId", apiId)
+                .queryForFirst();
     }
 }

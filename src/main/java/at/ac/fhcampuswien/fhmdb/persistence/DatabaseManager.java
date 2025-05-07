@@ -10,7 +10,9 @@ import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 import lombok.Getter;
 
+import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 @Getter
 public class DatabaseManager {
@@ -18,6 +20,21 @@ public class DatabaseManager {
     private ConnectionSource connectionSource = null;
     private final Dao<WatchlistMovieEntity, Long> watchlistMovieDao;
     private final Dao<MovieEntity, Long> movieDao;
+    private static DatabaseManager instance;
+
+    public static DatabaseManager getInstance() throws DataBaseException {
+        if (instance == null) {
+            try
+            {
+                instance = new DatabaseManager();
+            }
+            catch (DataBaseException e){
+                System.out.println("Error instantiating DatabaseManager");
+            }
+        }
+        return instance;
+    }
+
 
     public DatabaseManager() throws DataBaseException {
         try {
@@ -38,10 +55,36 @@ public class DatabaseManager {
         }
     }
 
-    private void createTables() throws SQLException {
-        TableUtils.createTableIfNotExists(connectionSource, WatchlistMovieEntity.class);
-        TableUtils.createTableIfNotExists(connectionSource, MovieEntity.class);
+    private void createTables() throws SQLException
+    {
+        // 1. Versuch: ORMLite Standard-Erstellung
+        try {
+            TableUtils.createTableIfNotExists(connectionSource, WatchlistMovieEntity.class);
+            TableUtils.createTableIfNotExists(connectionSource, MovieEntity.class);
+        } catch (SQLException e) {
+            System.err.println("ORMLite Table-Creation failed");
+
+            // 2. Versuch: Manuelle SQL-Erstellung
+            try (Connection conn = connectionSource.getReadWriteConnection(DB_URL).getUnderlyingConnection(); Statement stmt = conn.createStatement())
+            {
+                stmt.execute("CREATE TABLE IF NOT EXISTS WATCHLIST (" +
+                        "id BIGINT AUTO_INCREMENT PRIMARY KEY, " +
+                        "apiId VARCHAR(36) NOT NULL UNIQUE)");
+
+                stmt.execute("CREATE TABLE IF NOT EXISTS MOVIES (" +
+                        "id BIGINT AUTO_INCREMENT PRIMARY KEY, " +
+                        "apiId VARCHAR(36) NOT NULL UNIQUE, " +
+                        "title VARCHAR(255) NOT NULL, " +
+                        "description CLOB, " +
+                        "genres VARCHAR(255), " +
+                        "releaseYear INT, " +
+                        "imgUrl VARCHAR(255), " +
+                        "lengthInMinutes INT, " +
+                        "rating DOUBLE)");
+            }
+        }
     }
+
 
     private void dropTables() throws SQLException {
         TableUtils.dropTable(connectionSource, WatchlistMovieEntity.class, true);

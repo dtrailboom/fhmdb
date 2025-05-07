@@ -1,7 +1,11 @@
 package at.ac.fhcampuswien.fhmdb.ui;
 
+import at.ac.fhcampuswien.fhmdb.domain.WatchlistMovieEntity;
+import at.ac.fhcampuswien.fhmdb.eventHandler.ClickEventHandler;
 import at.ac.fhcampuswien.fhmdb.exceptions.DataBaseException;
 import at.ac.fhcampuswien.fhmdb.persistence.DatabaseManager;
+import at.ac.fhcampuswien.fhmdb.persistence.MovieRepository;
+import at.ac.fhcampuswien.fhmdb.persistence.WatchlistRepository;
 import javafx.geometry.Insets;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -16,6 +20,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import org.openapitools.client.model.Movie;
 
+import java.sql.SQLException;
 import java.util.stream.Collectors;
 
 public class MovieCell extends ListCell<Movie> {
@@ -26,12 +31,12 @@ public class MovieCell extends ListCell<Movie> {
     private final Button detailsBtn = new Button();
     private final HBox buttonBox = new HBox();
     private final VBox layout = new VBox(title, detail, genres, buttonBox);
-    // TODO: (initialisieren des WatchListRepos)private final WatchlistRepository watchlistRepository = WatchlistRepository.getInstance();
-    // TODO: (initialisieren des MovieRepos)private final MovieRepository movieRepository = MovieRepository.getInstance();
+    private static final WatchlistRepository watchlistRepository = WatchlistRepository.getInstance();
+    private static final MovieRepository movieRepository = MovieRepository.getInstance();
 
     private final boolean isHomeView;
 
-    public MovieCell(boolean isHomeView) {
+    public MovieCell(boolean isHomeView, ClickEventHandler<Movie> addToWatchlist, ClickEventHandler<Movie> removeFromWatchlist) {
         super();
         this.isHomeView = isHomeView;
 
@@ -44,17 +49,17 @@ public class MovieCell extends ListCell<Movie> {
 
         // Watchlist-Button-Logik
         watchListBtn.setOnAction(event -> {
-            Movie movie = getItem();
-            if (movie != null) {
+            try {
                 if (isHomeView) {
-                    // Füge Film zur Watchlist hinzu
-                    //watchlistRepository.addToWatchlist(movie);
+                    addToWatchlist.onClick(getItem());
+                    System.out.print("clicked to add movie to watchlist");
                 } else {
-                    // Entferne Film von der Watchlist
-                    //watchlistRepository.removeFromWatchlist(apiID);
-                    // Aktualisiere die ListView
-                    getListView().getItems().remove(movie);
+                    removeFromWatchlist.onClick(getItem());
+                    System.out.print("clicked to remove movie from watchlist");
+
                 }
+            } catch (DataBaseException e) {
+                showAlert("Error", e.getMessage());
             }
         });
 
@@ -116,5 +121,13 @@ public class MovieCell extends ListCell<Movie> {
                            "Length: " + movie.getLengthInMinutes() + " minutes");
         alert.showAndWait();
 
+    }
+
+    private void showAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 }

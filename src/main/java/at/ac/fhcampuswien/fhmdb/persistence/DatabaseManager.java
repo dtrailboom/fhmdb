@@ -25,13 +25,7 @@ public class DatabaseManager {
 
     public static DatabaseManager getInstance() throws DataBaseException {
         if (instance == null) {
-            try
-            {
-                instance = new DatabaseManager();
-            }
-            catch (DataBaseException e){
-                System.out.println("Error instantiating DatabaseManager");
-            }
+            instance = new DatabaseManager();
         }
         return instance;
     }
@@ -56,33 +50,12 @@ public class DatabaseManager {
         }
     }
 
-    private void createTables() throws SQLException
-    {
-        // 1. Versuch: ORMLite Standard-Erstellung
+    private void createTables() throws DataBaseException {
         try {
             TableUtils.createTableIfNotExists(connectionSource, WatchlistMovieEntity.class);
             TableUtils.createTableIfNotExists(connectionSource, MovieEntity.class);
         } catch (SQLException e) {
-            System.err.println("ORMLite Table-Creation failed");
-
-            // 2. Versuch: Manuelle SQL-Erstellung
-            try (Connection conn = connectionSource.getReadWriteConnection(DB_URL).getUnderlyingConnection(); Statement stmt = conn.createStatement())
-            {
-                stmt.execute("CREATE TABLE IF NOT EXISTS WATCHLIST (" +
-                        "id BIGINT AUTO_INCREMENT PRIMARY KEY, " +
-                        "apiId VARCHAR(36) NOT NULL UNIQUE)");
-
-                stmt.execute("CREATE TABLE IF NOT EXISTS MOVIES (" +
-                        "id BIGINT AUTO_INCREMENT PRIMARY KEY, " +
-                        "apiId VARCHAR(36) NOT NULL UNIQUE, " +
-                        "title VARCHAR(255) NOT NULL, " +
-                        "description CLOB, " +
-                        "genres VARCHAR(255), " +
-                        "releaseYear INT, " +
-                        "imgUrl VARCHAR(255), " +
-                        "lengthInMinutes INT, " +
-                        "rating DOUBLE)");
-            }
+            throw new DataBaseException("Table creation failed");
         }
     }
 

@@ -38,7 +38,7 @@
       </HBox>
 
       <!-- Filterbar -->
-      <HBox spacing="10.0" styleClass="background-black" stylesheets="@styles.css" alignment="CENTER_LEFT">
+      <HBox fx:id="filterBar" spacing="10.0" styleClass="background-black" stylesheets="@styles.css" alignment="CENTER_LEFT">
          <padding>
             <Insets bottom="15.0" left="10.0" top="15.0" right="10.0"/>
          </padding>

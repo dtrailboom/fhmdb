@@ -13,38 +13,52 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
 import org.openapitools.client.api.MovieControllerApi;
 import org.openapitools.client.model.Movie;
 import org.openapitools.client.model.Movie.GenresEnum;
+import org.springframework.web.client.ResourceAccessException;
 
 import java.net.URL;
-import java.sql.SQLException;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class HomeController implements Initializable {
-    @FXML public Button searchBtn;
-    @FXML public TextField searchField;
-    @FXML public ListView<Movie> movieListView;
-    @FXML public ComboBox<GenresEnum> genreComboBox;
-    @FXML public TextField releaseYearField;
-    @FXML public TextField ratingField;
-    @FXML public Button sortBtn;
+    @FXML
+    public Button searchBtn;
+    @FXML
+    public TextField searchField;
+    @FXML
+    public ListView<Movie> movieListView;
+    @FXML
+    public ComboBox<GenresEnum> genreComboBox;
+    @FXML
+    public TextField releaseYearField;
+    @FXML
+    public TextField ratingField;
+    @FXML
+    public Button sortBtn;
+    @FXML
+    private HBox filterBar;
 
     private final MovieControllerApi movieControllerApi = new MovieControllerApi();
     private final ObservableList<Movie> observableMovies = FXCollections.observableArrayList();
     private List<Movie> allMovies = new ArrayList<>();
     private List<Movie> watchListMovies = new ArrayList<>();
     private boolean isHomeView = true;
+    private MovieRepository movieRepository;
+    private WatchlistRepository watchlistRepository;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         try {
+            movieRepository = MovieRepository.getInstance();
+            watchlistRepository = WatchlistRepository.getInstance();
             allMovies = loadMovies();
             observableMovies.setAll(allMovies);
-            WatchlistRepository.getInstance().clearWatchlist();
-        } catch (SQLException e) {
+            watchlistRepository.clearWatchlist();
+        } catch (DataBaseException e) {
             showAlert("Database Error", "Could not load movies: " + e.getMessage());
         }
 
@@ -56,19 +70,19 @@ public class HomeController implements Initializable {
 
     private final ClickEventHandler<Movie> addToWatchlistClicked = movie -> {
         try {
-            WatchlistRepository.getInstance().addToWatchlist(new WatchlistMovieEntity(movie.getId().toString()));
-        } catch (SQLException e) {
+            watchlistRepository.addToWatchlist(new WatchlistMovieEntity(movie.getId().toString()));
+        } catch (DataBaseException e) {
             showAlert("Watchlist Error", "Could not add to watchlist.");
         }
     };
 
     private final ClickEventHandler<Movie> removeFromWatchlistClicked = movie -> {
         try {
-            WatchlistRepository.getInstance().removefromWatchlist(movie.getId().toString());
+            watchlistRepository.removeFromWatchlist(movie.getId().toString());
             if (!isHomeView) {
                 refreshWatchlistView();
             }
-        } catch (SQLException e) {
+        } catch (DataBaseException e) {
             showAlert("Watchlist Error", "Could not remove from watchlist.");
         }
     };
@@ -101,8 +115,12 @@ public class HomeController implements Initializable {
         Integer _releaseYear = isValidYear(releaseYear);
         Double _rating = isValidRating(rating);
 
-        return movieControllerApi.getMovies(_searchText, _genre, _releaseYear, _rating);
-
+        try {
+            return movieControllerApi.getMovies(_searchText, _genre, _releaseYear, _rating);
+        } catch (ResourceAccessException e) {
+            showAlert("Could not load movies: ", "Falling back to cached DB movies: " + e.getMessage());
+            return allMovies;
+        }
     }
 
     public Double isValidRating(String rating) {
@@ -132,25 +150,31 @@ public class HomeController implements Initializable {
                 .toList();
     }
 
+    @FXML
     public void showHome(ActionEvent actionEvent) {
         isHomeView = true;
         observableMovies.setAll(allMovies);
+        filterBar.setVisible(true);
+        filterBar.setManaged(true);
         movieListView.setCellFactory(param -> new MovieCell(isHomeView, addToWatchlistClicked, removeFromWatchlistClicked));
     }
 
+    @FXML
     public void showWatchList(ActionEvent actionEvent) {
         isHomeView = false;
         refreshWatchlistView();
+        filterBar.setVisible(false);
+        filterBar.setManaged(false);
         movieListView.setCellFactory(param -> new MovieCell(isHomeView, addToWatchlistClicked, removeFromWatchlistClicked));
     }
 
     private void refreshWatchlistView() {
         try {
-            List<WatchlistMovieEntity> watchlist = WatchlistRepository.getInstance().getWatchlist();
+            List<WatchlistMovieEntity> watchlist = watchlistRepository.getWatchlist();
 
             List<MovieEntity> movieEntities = new ArrayList<>();
             for (WatchlistMovieEntity entry : watchlist) {
-                MovieEntity movieEntity = MovieRepository.getInstance().getMovieByApiId(entry.getApiId());
+                MovieEntity movieEntity = movieRepository.getMovieByApiId(entry.getApiId());
                 if (movieEntity != null) {
                     movieEntities.add(movieEntity);
                 }
@@ -158,27 +182,43 @@ public class HomeController implements Initializable {
 
             watchListMovies = MovieEntity.toMovies(movieEntities);
             observableMovies.setAll(watchListMovies);
-        } catch (Exception e) {
+        } catch (DataBaseException e) {
             showAlert("Error", "Could not load watchlist: " + e.getMessage());
         }
     }
 
-
-    private List<Movie> loadMovies() throws SQLException {
+    private List<Movie> loadMovies() {
         try {
-            List<Movie> movies = movieControllerApi.getMovies(null, null, null, null);
-            MovieRepository.getInstance().addAllMovies(movies);
+            List<Movie> movies = fetchRemoteMovies();
+            cacheMovies(movies);
             return movies;
-        }
-        catch (Exception e)
-        {
-            System.out.println("Falling back to cached DB movies: " + e.getMessage());
-
-            List<MovieEntity> entities = MovieRepository.getInstance().getAllMovies();
-            return MovieEntity.toMovies(entities);
+        } catch (ResourceAccessException e) {
+            showAlert("Could not load remote movies", "Falling back to cached DB movies: " + e.getMessage());
+            return loadCachedMovies();
         }
     }
 
+    private List<Movie> fetchRemoteMovies() throws ResourceAccessException {
+        return movieControllerApi.getMovies(null, null, null, null);
+    }
+
+    private void cacheMovies(List<Movie> movies) {
+        try {
+            movieRepository.removeAll();
+            movieRepository.addAllMovies(movies);
+        } catch (DataBaseException e) {
+            showAlert("Could not cache movies", e.getMessage());
+        }
+    }
+
+    private List<Movie> loadCachedMovies() {
+        try {
+            return MovieEntity.toMovies(movieRepository.getAllMovies());
+        } catch (DataBaseException e) {
+            showAlert("Could not load cached movies", e.getMessage());
+            return Collections.emptyList();
+        }
+    }
 
     public String getMostPopularActor(List<Movie> movies) {
         if (movies == null || movies.isEmpty()) {

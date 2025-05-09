@@ -31,8 +31,6 @@ public class MovieCell extends ListCell<Movie> {
     private final Button detailsBtn = new Button();
     private final HBox buttonBox = new HBox();
     private final VBox layout = new VBox(title, detail, genres, buttonBox);
-    private static final WatchlistRepository watchlistRepository = WatchlistRepository.getInstance();
-    private static final MovieRepository movieRepository = MovieRepository.getInstance();
 
     private final boolean isHomeView;
 

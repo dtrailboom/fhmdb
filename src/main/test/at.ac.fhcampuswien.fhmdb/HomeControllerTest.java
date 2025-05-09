@@ -449,13 +449,13 @@ class HomeControllerTest {
     @Test
     public void getMostPopularActor_MovieNullMainCast_NoErrorAndReturnsCorrectResult() { // Falls ein Film ein null-Feld für mainCast hat, sollte das keine NullPointerException verursachen.
 
-            Movie movie1 = new Movie().title("Movie 1").mainCast(List.of("Actor A", "Actor B"));
-            Movie movie2 = new Movie().title("Movie 2");  // movie2.mainCast bleibt null
-            Movie movie3 = new Movie().title("Movie 3").mainCast(List.of("Actor A"));
-            List<Movie> movies = List.of(movie1, movie2, movie3);
+        Movie movie1 = new Movie().title("Movie 1").mainCast(List.of("Actor A", "Actor B"));
+        Movie movie2 = new Movie().title("Movie 2");  // movie2.mainCast bleibt null
+        Movie movie3 = new Movie().title("Movie 3").mainCast(List.of("Actor A"));
+        List<Movie> movies = List.of(movie1, movie2, movie3);
 
-            String result = homeController.getMostPopularActor(movies);
-            assertEquals("Actor A", result); // Actor A kommt am häufigsten vor
+        String result = homeController.getMostPopularActor(movies);
+        assertEquals("Actor A", result); // Actor A kommt am häufigsten vor
 
     }
 
@@ -541,9 +541,10 @@ class HomeControllerTest {
 
     @Test
     void toMovies_ParsesGenresCorrectly() {
-        MovieEntity entity = new MovieEntity();
-        entity.apiId = UUID.randomUUID().toString();
-        entity.genres = "ACTION,SCIENCE_FICTION";
+        MovieEntity entity = MovieEntity.builder()
+                .apiId(UUID.randomUUID().toString())
+                .genres("ACTION,SCIENCE_FICTION")
+                .build();
 
         List<Movie> movies = MovieEntity.toMovies(Collections.singletonList(entity));
         List<Movie.GenresEnum> genres = movies.get(0).getGenres();
@@ -566,15 +567,16 @@ class HomeControllerTest {
 
         // Arrange
 
-        MovieEntity entity = new MovieEntity();
-        entity.apiId = UUID.randomUUID().toString();
-        entity.title = "Inception";
-        entity.description = "A mind-bending thriller";
-        entity.genres = "ACTION,SCIENCE_FICTION";
-        entity.releaseYear = 2010;
-        entity.imgUrl = "https://example.com/inception.jpg";
-        entity.lengthInMinutes = 148;
-        entity.rating = 8.8;
+        MovieEntity entity = MovieEntity.builder()
+                .apiId(UUID.randomUUID().toString())
+                .title("Inception")
+                .description("A mind-bending thriller")
+                .genres("ACTION,SCIENCE_FICTION")
+                .releaseYear(2010)
+                .imgUrl("https://example.com/inception.jpg")
+                .lengthInMinutes(148)
+                .rating(8.8)
+                .build();
 
         // Act
         movieDao.create(entity); // wird gespeichert und ID generiert
@@ -585,7 +587,7 @@ class HomeControllerTest {
         // Optional: Prüfe, ob der Datensatz korrekt in der DB ist
         List<MovieEntity> movies = movieDao.queryForAll();
         assertEquals(1, movies.size());
-        assertEquals(entity.title, movies.get(0).title);
+        assertEquals(entity.getTitle(), movies.get(0).getTitle());
         System.out.println("Gespeicherter Datensatz mit ID: " + entity.getId());
         connectionSource.close();
     }
@@ -596,9 +598,11 @@ class HomeControllerTest {
         Dao<MovieEntity, Long> movieDao = DaoManager.createDao(connectionSource, MovieEntity.class);
         TableUtils.createTableIfNotExists(connectionSource, MovieEntity.class);
 
-        MovieEntity entity = new MovieEntity();
-        entity.apiId = UUID.randomUUID().toString();
-        entity.title = "Inception";
+        MovieEntity entity = MovieEntity.builder()
+                .apiId(UUID.randomUUID().toString())
+                .title("Inception")
+                .build();
+
         movieDao.create(entity);
 
         assertTrue(entity.getId() > 0, "ID sollte > 0 sein");
@@ -613,13 +617,15 @@ class HomeControllerTest {
         Dao<MovieEntity, Long> movieDao = DaoManager.createDao(connectionSource, MovieEntity.class);
         TableUtils.createTableIfNotExists(connectionSource, MovieEntity.class);
         // Arrange
-        MovieEntity entity1 = new MovieEntity();
-        entity1.apiId = UUID.randomUUID().toString();
-        entity1.title = "Movie One";
+        MovieEntity entity1 = MovieEntity.builder()
+                .apiId(UUID.randomUUID().toString())
+                .title("Movie One")
+                .build();
 
-        MovieEntity entity2 = new MovieEntity();
-        entity2.apiId = UUID.randomUUID().toString();
-        entity2.title = "Movie Two";
+        MovieEntity entity2 = MovieEntity.builder()
+                .apiId(UUID.randomUUID().toString())
+                .title("Movie Two")
+                .build();
 
         // Act
         movieDao.create(entity1);
@@ -640,14 +646,15 @@ class HomeControllerTest {
         Dao<MovieEntity, Long> movieDao = DaoManager.createDao(connectionSource, MovieEntity.class);
         TableUtils.createTableIfNotExists(connectionSource, MovieEntity.class);
 
-        MovieEntity entity = new MovieEntity();
-        entity.apiId = UUID.randomUUID().toString();
-        entity.title = "Inception";
+        MovieEntity entity = MovieEntity.builder()
+                .apiId(UUID.randomUUID().toString())
+                .title("Inception")
+                .build();
         movieDao.create(entity);
 
         List<MovieEntity> movies = movieDao.queryForAll();
         assertEquals(1, movies.size());
-        assertEquals("Inception", movies.get(0).title);
+        assertEquals("Inception", movies.get(0).getTitle());
 
         connectionSource.close();
     }
@@ -658,25 +665,27 @@ class HomeControllerTest {
         Dao<MovieEntity, Long> movieDao = DaoManager.createDao(connectionSource, MovieEntity.class);
         TableUtils.createTableIfNotExists(connectionSource, MovieEntity.class);
 
-        MovieEntity entity = new MovieEntity();
-        entity.apiId = UUID.randomUUID().toString();
-        entity.title = "Inception";
-        entity.description = "A mind-bending thriller";
-        entity.genres = "ACTION,SCIENCE_FICTION";
-        entity.releaseYear = 2010;
-        entity.imgUrl = "https://example.com/inception.jpg";
-        entity.lengthInMinutes = 148;
-        entity.rating = 8.8;
+        MovieEntity entity = MovieEntity.builder()
+                .apiId(UUID.randomUUID().toString())
+                .title("Inception")
+                .description("A mind-bending thriller")
+                .genres("ACTION,SCIENCE_FICTION")
+                .releaseYear(2010)
+                .imgUrl("https://example.com/inception.jpg")
+                .lengthInMinutes(148)
+                .rating(8.8)
+                .build();
+
         movieDao.create(entity);
 
         MovieEntity saved = movieDao.queryForId(entity.getId());
-        assertEquals("Inception", saved.title);
-        assertEquals("A mind-bending thriller", saved.description);
-        assertEquals("ACTION,SCIENCE_FICTION", saved.genres);
-        assertEquals(2010, saved.releaseYear);
-        assertEquals("https://example.com/inception.jpg", saved.imgUrl);
-        assertEquals(148, saved.lengthInMinutes);
-        assertEquals(8.8, saved.rating);
+        assertEquals("Inception", saved.getTitle());
+        assertEquals("A mind-bending thriller", saved.getDescription());
+        assertEquals("ACTION,SCIENCE_FICTION", saved.getGenres());
+        assertEquals(2010, saved.getReleaseYear());
+        assertEquals("https://example.com/inception.jpg", saved.getImgUrl());
+        assertEquals(148, saved.getLengthInMinutes());
+        assertEquals(8.8, saved.getRating());
 
         connectionSource.close();
     }
@@ -685,7 +694,7 @@ class HomeControllerTest {
     void fromMovies_ValidMovieList_ReturnsCorrectSize() {
 
         List<Movie> movies = List.of(
-                new Movie().id(UUID.randomUUID()).title("A").description("Nice movie").genres(List.of(ACTION)).releaseYear(2000).lengthInMinutes(120).rating(8.5),
+                new Movie().id(UUID.randomUUID()).title("A").description("Nice movie").genres(List.of(ACTION, ADVENTURE)).releaseYear(2000).lengthInMinutes(120).rating(8.5),
                 new Movie().id(UUID.randomUUID()).title("B").description("Hard core").genres(List.of(ADVENTURE)).releaseYear(2001).lengthInMinutes(100).rating(7.5)
         );
         System.out.println("Debug: Movie-Liste: " + movies);
@@ -693,7 +702,7 @@ class HomeControllerTest {
         List<MovieEntity> entities = MovieEntity.fromMovies(movies);
         System.out.println("Debug: Ergebnismenge von MovieEntity.fromMovies(): " + entities);
 
-        assertEquals(2, entities.size());
+        assertThat(entities).hasSize(2);
     }
 
     @Test
@@ -758,16 +767,17 @@ class HomeControllerTest {
 
     @Test
     void toMovies_ValidEntity_ReturnsCorrectMovieObject() {
-        // Arrange
-        MovieEntity entity = new MovieEntity();
-        entity.apiId = UUID.randomUUID().toString();
-        entity.title = "Inception";
-        entity.description = "A mind-bending thriller";
-        entity.genres = "ACTION,SCIENCE_FICTION";
-        entity.releaseYear = 2010;
-        entity.imgUrl = "https://example.com/inception.jpg";
-        entity.lengthInMinutes = 148;
-        entity.rating = 8.8;
+        MovieEntity entity = MovieEntity.builder()
+                .apiId(UUID.randomUUID().toString())
+                .title("Inception")
+                .description("A mind-bending thriller")
+                .genres("ACTION,SCIENCE_FICTION")
+                .releaseYear(2010)
+                .imgUrl("https://example.com/inception.jpg")
+                .lengthInMinutes(148)
+                .rating(8.8)
+                .build();
+
         System.out.println("Debug: MovieEntity: " + entity);
         System.out.println("ID: " + entity.getId());
 
@@ -782,13 +792,13 @@ class HomeControllerTest {
         assertEquals(1, movies.size());
 
         Movie movie = movies.get(0);
-        assertEquals(UUID.fromString(entity.apiId), movie.getId());
-        assertEquals(entity.title, movie.getTitle());
-        assertEquals(entity.description, movie.getDescription());
-        assertEquals(entity.releaseYear, movie.getReleaseYear());
-        assertEquals(entity.imgUrl, movie.getImgUrl());
-        assertEquals(entity.lengthInMinutes, movie.getLengthInMinutes());
-        assertEquals(entity.rating, movie.getRating());
+        assertEquals(UUID.fromString(entity.getApiId()), movie.getId());
+        assertEquals(entity.getTitle(), movie.getTitle());
+        assertEquals(entity.getDescription(), movie.getDescription());
+        assertEquals(entity.getReleaseYear(), movie.getReleaseYear());
+        assertEquals(entity.getImgUrl(), movie.getImgUrl());
+        assertEquals(entity.getLengthInMinutes(), movie.getLengthInMinutes());
+        assertEquals(entity.getRating(), movie.getRating());
 
         // Test genre conversion
         List<Movie.GenresEnum> genres = movie.getGenres();
@@ -800,9 +810,10 @@ class HomeControllerTest {
 
     @Test
     void toMovies_SingleEntity_ReturnsSingleMovie() {
-        MovieEntity entity = new MovieEntity();
-        entity.apiId = UUID.randomUUID().toString();
-        entity.title = "Inception";
+        MovieEntity entity = MovieEntity.builder()
+                .apiId(UUID.randomUUID().toString())
+                .title("Inception")
+                .build();
 
         List<MovieEntity> entities = Collections.singletonList(entity);
         List<Movie> movies = MovieEntity.toMovies(entities);
@@ -813,14 +824,15 @@ class HomeControllerTest {
     @Test
     void toMovies_MapsBasicFieldsCorrectly() {
         UUID apiId = UUID.randomUUID();
-        MovieEntity entity = new MovieEntity();
-        entity.apiId = apiId.toString();
-        entity.title = "Inception";
-        entity.description = "A mind-bending thriller";
-        entity.releaseYear = 2010;
-        entity.imgUrl = "https://example.com/inception.jpg";
-        entity.lengthInMinutes = 148;
-        entity.rating = 8.8;
+        MovieEntity entity = MovieEntity.builder()
+                .apiId(apiId.toString())
+                .title("Inception")
+                .description("A mind-bending thriller")
+                .releaseYear(2010)
+                .imgUrl("https://example.com/inception.jpg")
+                .lengthInMinutes(148)
+                .rating(8.8)
+                .build();
 
         List<Movie> movies = MovieEntity.toMovies(Collections.singletonList(entity));
         Movie movie = movies.get(0);
@@ -846,15 +858,16 @@ class HomeControllerTest {
     @Test
     public void toMovies_NullGenres_ReturnsMovieWithEmptyGenreList() {
         // Arrange - Eine Entity mit null bei Genres
-        MovieEntity entity = new MovieEntity();
-        entity.apiId = "00000000-0000-0000-0000-000000000003";
-        entity.title = "Null Genre Movie";
-        entity.description = "This movie has no genres set.";
-        entity.genres = null;  // <-- Wichtig für diesen Test
-        entity.releaseYear = 2022;
-        entity.imgUrl = "url3";
-        entity.lengthInMinutes = 120;
-        entity.rating = 5.5;
+        MovieEntity entity = MovieEntity.builder()
+                .apiId("00000000-0000-0000-0000-000000000003")
+                .title("Null Genre Movie")
+                .description("This movie has no genres set.")
+                .genres(null)
+                .releaseYear(2022)
+                .imgUrl("url3")
+                .lengthInMinutes(120)
+                .rating(5.5)
+                .build();
 
         List<MovieEntity> entities = Collections.singletonList(entity);
 
@@ -874,7 +887,4 @@ class HomeControllerTest {
         assertEquals(120, movie.getLengthInMinutes());
         assertEquals(5.5, movie.getRating(), 0.01);
     }
-
-
-
 }

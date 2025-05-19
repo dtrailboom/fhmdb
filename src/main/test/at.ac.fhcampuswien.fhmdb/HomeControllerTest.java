@@ -1,6 +1,7 @@
 package at.ac.fhcampuswien.fhmdb;
 
 import at.ac.fhcampuswien.fhmdb.domain.MovieEntity;
+import at.ac.fhcampuswien.fhmdb.domain.WatchlistMovieEntity;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
@@ -886,5 +887,36 @@ class HomeControllerTest {
         assertEquals("url3", movie.getImgUrl());
         assertEquals(120, movie.getLengthInMinutes());
         assertEquals(5.5, movie.getRating(), 0.01);
+    }
+
+    @Test
+    void createWatchlistEntity_PersistsEntityInDatabase() throws Exception {
+        ConnectionSource connectionSource = new JdbcConnectionSource("jdbc:h2:mem:testdb_watchlist_1");
+        Dao<WatchlistMovieEntity, Long> watchlistDao = DaoManager.createDao(connectionSource, WatchlistMovieEntity.class);
+        TableUtils.createTableIfNotExists(connectionSource, WatchlistMovieEntity.class);
+
+        WatchlistMovieEntity entity = new WatchlistMovieEntity(UUID.randomUUID().toString());
+        watchlistDao.create(entity);
+
+        List<WatchlistMovieEntity> entries = watchlistDao.queryForAll();
+        assertEquals(1, entries.size());  // Hier liegt der Fokus nur auf der Speicherung
+
+        connectionSource.close();
+    }
+
+    @Test
+    void fetchWatchlistEntity_ReturnsCorrectData() throws Exception {
+        ConnectionSource connectionSource = new JdbcConnectionSource("jdbc:h2:mem:testdb_watchlist_2");
+        Dao<WatchlistMovieEntity, Long> watchlistDao = DaoManager.createDao(connectionSource, WatchlistMovieEntity.class);
+        TableUtils.createTableIfNotExists(connectionSource, WatchlistMovieEntity.class);
+
+        String uuid = UUID.randomUUID().toString();
+        WatchlistMovieEntity entity = new WatchlistMovieEntity(uuid);
+        watchlistDao.create(entity);
+
+        List<WatchlistMovieEntity> entries = watchlistDao.queryForAll();
+        assertEquals(uuid, entries.get(0).getApiId());  // Fokus auf Datenkonsistenz
+
+        connectionSource.close();
     }
 }

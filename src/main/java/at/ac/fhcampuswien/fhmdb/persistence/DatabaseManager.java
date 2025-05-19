@@ -10,9 +10,7 @@ import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 import lombok.Getter;
 
-import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 @Getter
 public class DatabaseManager {
@@ -30,8 +28,7 @@ public class DatabaseManager {
         return instance;
     }
 
-
-    public DatabaseManager() throws DataBaseException {
+    private DatabaseManager() throws DataBaseException {
         try {
             createConnectionSource();
             watchlistMovieDao = DaoManager.createDao(connectionSource, WatchlistMovieEntity.class);

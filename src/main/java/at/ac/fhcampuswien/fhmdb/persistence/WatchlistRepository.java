@@ -1,6 +1,5 @@
 package at.ac.fhcampuswien.fhmdb.persistence;
 
-import at.ac.fhcampuswien.fhmdb.domain.MovieEntity;
 import at.ac.fhcampuswien.fhmdb.domain.WatchlistMovieEntity;
 import at.ac.fhcampuswien.fhmdb.exceptions.DataBaseException;
 import com.j256.ormlite.dao.Dao;
@@ -9,10 +8,10 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class WatchlistRepository {
-    private Dao<WatchlistMovieEntity, Long> dao;
+    private final Dao<WatchlistMovieEntity, Long> dao;
     private static WatchlistRepository instance = null;
 
-    public WatchlistRepository() throws DataBaseException {
+    private WatchlistRepository() throws DataBaseException {
         dao = DatabaseManager.getInstance().getWatchlistMovieDao();
     }
 

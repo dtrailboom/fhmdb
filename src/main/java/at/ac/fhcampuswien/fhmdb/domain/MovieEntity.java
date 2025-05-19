@@ -58,8 +58,6 @@ public class MovieEntity {
         return movies.stream()
                 .map(movie -> {
                     MovieEntity entity = new MovieEntity();
-                    assert movie.getId() != null;
-                    entity.id = movie.getId().getMostSignificantBits();
                     entity.apiId = movie.getId().toString();
                     entity.title = movie.getTitle();
                     entity.description = movie.getDescription();

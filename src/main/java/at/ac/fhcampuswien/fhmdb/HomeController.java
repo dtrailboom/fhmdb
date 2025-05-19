@@ -57,7 +57,6 @@ public class HomeController implements Initializable {
             watchlistRepository = WatchlistRepository.getInstance();
             allMovies = loadMovies();
             observableMovies.setAll(allMovies);
-            watchlistRepository.clearWatchlist();
         } catch (DataBaseException e) {
             showAlert("Database Error", "Could not load movies: " + e.getMessage());
         }

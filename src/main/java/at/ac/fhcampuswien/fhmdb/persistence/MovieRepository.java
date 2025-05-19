@@ -14,10 +14,10 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class MovieRepository {
-    private Dao<MovieEntity, Long> dao;
+    private final Dao<MovieEntity, Long> dao;
     private static MovieRepository instance;
 
-    public MovieRepository() throws DataBaseException {
+    private MovieRepository() throws DataBaseException {
         dao = DatabaseManager.getInstance().getMovieDao();
     }
 

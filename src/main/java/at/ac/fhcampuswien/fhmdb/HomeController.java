@@ -7,6 +7,10 @@ import at.ac.fhcampuswien.fhmdb.exceptions.DataBaseException;
 import at.ac.fhcampuswien.fhmdb.persistence.MovieRepository;
 import at.ac.fhcampuswien.fhmdb.persistence.WatchlistRepository;
 import at.ac.fhcampuswien.fhmdb.ui.MovieCell;
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -24,7 +28,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class HomeController implements Initializable {
+public class HomeController implements Initializable, InvalidationListener {
     @FXML
     public Button searchBtn;
     @FXML
@@ -55,10 +59,11 @@ public class HomeController implements Initializable {
         try {
             movieRepository = MovieRepository.getInstance();
             watchlistRepository = WatchlistRepository.getInstance();
+            watchlistRepository.addListener(this);
             allMovies = loadMovies();
             observableMovies.setAll(allMovies);
         } catch (DataBaseException e) {
-            showAlert("Database Error", "Could not load movies: " + e.getMessage());
+            showAlert("Database Error", "Could not load movies: " + e.getMessage(), Alert.AlertType.ERROR);
         }
 
         movieListView.setItems(observableMovies);
@@ -71,7 +76,7 @@ public class HomeController implements Initializable {
         try {
             watchlistRepository.addToWatchlist(new WatchlistMovieEntity(movie.getId().toString()));
         } catch (DataBaseException e) {
-            showAlert("Watchlist Error", "Could not add to watchlist.");
+            showAlert("Watchlist Error", "Could not add to watchlist.", Alert.AlertType.ERROR);
         }
     };
 
@@ -82,7 +87,7 @@ public class HomeController implements Initializable {
                 refreshWatchlistView();
             }
         } catch (DataBaseException e) {
-            showAlert("Watchlist Error", "Could not remove from watchlist.");
+            showAlert("Watchlist Error", "Could not remove from watchlist.", Alert.AlertType.ERROR);
         }
     };
 
@@ -117,7 +122,7 @@ public class HomeController implements Initializable {
         try {
             return movieControllerApi.getMovies(_searchText, _genre, _releaseYear, _rating);
         } catch (ResourceAccessException e) {
-            showAlert("Could not load movies: ", "Falling back to cached DB movies: " + e.getMessage());
+            showAlert("Could not load movies: ", "Falling back to cached DB movies: " + e.getMessage(), Alert.AlertType.ERROR);
             return allMovies;
         }
     }
@@ -182,7 +187,7 @@ public class HomeController implements Initializable {
             watchListMovies = MovieEntity.toMovies(movieEntities);
             observableMovies.setAll(watchListMovies);
         } catch (DataBaseException e) {
-            showAlert("Error", "Could not load watchlist: " + e.getMessage());
+            showAlert("Error", "Could not load watchlist: " + e.getMessage(), Alert.AlertType.ERROR);
         }
     }
 
@@ -192,7 +197,7 @@ public class HomeController implements Initializable {
             cacheMovies(movies);
             return movies;
         } catch (ResourceAccessException e) {
-            showAlert("Could not load remote movies", "Falling back to cached DB movies: " + e.getMessage());
+            showAlert("Could not load remote movies", "Falling back to cached DB movies: " + e.getMessage(), Alert.AlertType.ERROR);
             return loadCachedMovies();
         }
     }
@@ -206,7 +211,7 @@ public class HomeController implements Initializable {
             movieRepository.removeAll();
             movieRepository.addAllMovies(movies);
         } catch (DataBaseException e) {
-            showAlert("Could not cache movies", e.getMessage());
+            showAlert("Could not cache movies", e.getMessage(), Alert.AlertType.ERROR);
         }
     }
 
@@ -214,7 +219,7 @@ public class HomeController implements Initializable {
         try {
             return MovieEntity.toMovies(movieRepository.getAllMovies());
         } catch (DataBaseException e) {
-            showAlert("Could not load cached movies", e.getMessage());
+            showAlert("Could not load cached movies", e.getMessage(), Alert.AlertType.ERROR);
             return Collections.emptyList();
         }
     }
@@ -252,11 +257,16 @@ public class HomeController implements Initializable {
         return movies.stream().filter(movie -> movie.getReleaseYear() >= startYear && movie.getReleaseYear() <= endYear).collect(Collectors.toList());
     }
 
-    private void showAlert(String title, String msg) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
+    private void showAlert(String title, String msg, Alert.AlertType type) {
+        Alert alert = new Alert(type);
         alert.setTitle(title);
         alert.setContentText(msg);
         alert.setHeaderText(null);
         alert.showAndWait();
+    }
+
+    @Override
+    public void invalidated(Observable observable) {
+        showAlert("Watchlist", ((WatchlistRepository) observable).getMessage(), Alert.AlertType.INFORMATION);
     }
 }

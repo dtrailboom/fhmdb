@@ -50,11 +50,8 @@ public class MovieCell extends ListCell<Movie> {
             try {
                 if (isHomeView) {
                     addToWatchlist.onClick(getItem());
-                    System.out.print("clicked to add movie to watchlist");
                 } else {
                     removeFromWatchlist.onClick(getItem());
-                    System.out.print("clicked to remove movie from watchlist");
-
                 }
             } catch (DataBaseException e) {
                 showAlert("Error", e.getMessage());

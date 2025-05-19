@@ -2,15 +2,14 @@ package at.ac.fhcampuswien.fhmdb.domain;
 
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import lombok.*;
 import org.openapitools.client.model.Movie;
 import org.openapitools.client.model.Movie.GenresEnum;
 
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Getter
@@ -18,7 +17,7 @@ import java.util.stream.Collectors;
 @Builder
 @AllArgsConstructor
 @DatabaseTable(tableName = "movies")
-public class MovieEntity {
+public class MovieEntity implements ChangeListener<MovieEntity> {
     @DatabaseField(generatedId = true)
     private long id;
 
@@ -95,5 +94,10 @@ public class MovieEntity {
                     return movie;
                 })
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public void changed(ObservableValue<? extends MovieEntity> observableValue, MovieEntity movieEntity, MovieEntity t1) {
+
     }
 }

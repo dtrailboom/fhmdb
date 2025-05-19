@@ -11,14 +11,14 @@ public class WatchlistMovieEntity {
     @DatabaseField(generatedId = true)
     public long id;
 
-    @DatabaseField(canBeNull = false)
+    @DatabaseField(canBeNull = false, unique = true)
     private String apiId;  // Verweist auf den API-ID des Movies
 
-    public WatchlistMovieEntity() {}
+    public WatchlistMovieEntity() {
+    }
 
     public WatchlistMovieEntity(String apiId) {
         this.apiId = apiId;
     }
-
 }
 

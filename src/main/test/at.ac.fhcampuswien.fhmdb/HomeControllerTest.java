@@ -2,12 +2,14 @@ package at.ac.fhcampuswien.fhmdb;
 
 import at.ac.fhcampuswien.fhmdb.domain.MovieEntity;
 import at.ac.fhcampuswien.fhmdb.domain.WatchlistMovieEntity;
+import at.ac.fhcampuswien.fhmdb.factory.ControllerFactory;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.openapitools.client.model.Movie;
 
@@ -32,6 +34,7 @@ class HomeControllerTest {
         homeController = new HomeController();
         movies = new ArrayList<>(List.of(bladeRunner, coolWorld, inception));
     }
+
 
 
     //-----SORTING------//
@@ -919,4 +922,43 @@ class HomeControllerTest {
 
         connectionSource.close();
     }
+    //----------CONTROLLER-FACTORY-----------
+    @Test
+    void returnsSameInstance_ForHomeController() {
+
+        ControllerFactory factory = new ControllerFactory();
+
+        Object controller1 = factory.call(HomeController.class);
+        Object controller2 = factory.call(HomeController.class);
+
+        assertNotNull(controller1);
+        assertSame(controller1, controller2, "ControllerFactory should return the same instance of HomeController");
+    }
+
+    public static class DummyController {
+        public DummyController() {
+        }
+    }
+
+    @Test
+    void returnsSameInstance_ForOtherControllers_WhenUsingSingletonFactory() {
+        ControllerFactory factory = new ControllerFactory();
+
+        Object controller1 = factory.call(DummyController.class);
+        Object controller2 = factory.call(DummyController.class);
+
+        assertNotNull(controller1);
+        assertSame(controller1, controller2, "Factory should return same instance for DummyController when using singleton logic");
+    }
+
+    static class NoDefaultConstructor {
+        public NoDefaultConstructor(String msg) {}
+    }
+
+    @Test
+    void throwsException_WhenControllerHasNoDefaultConstructor() {
+        ControllerFactory factory = new ControllerFactory();
+        assertThrows(RuntimeException.class, () -> factory.call(NoDefaultConstructor.class));
+    }
+
 }

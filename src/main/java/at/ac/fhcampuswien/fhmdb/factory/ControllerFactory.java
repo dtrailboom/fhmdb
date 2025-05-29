@@ -9,11 +9,11 @@ public class ControllerFactory implements Callback<Class<?>, Object> {
 
     @Override
     public Object call(Class<?> controllerClass) {
-        return singletons.computeIfAbsent(controllerClass, cls -> {
+        return singletons.computeIfAbsent(controllerClass, requestedController -> {
             try {
-                return cls.getDeclaredConstructor().newInstance();
+                return requestedController.getDeclaredConstructor().newInstance();
             } catch (Exception e) {
-                throw new RuntimeException("Could not create controller: " + cls.getName(), e);
+                throw new RuntimeException("Could not create controller: " + requestedController.getName(), e);
             }
         });
     }

@@ -12,7 +12,7 @@ public class WatchlistMovieEntity {
     public long id;
 
     @DatabaseField(canBeNull = false, unique = true)
-    private String apiId;  // Verweist auf den API-ID des Movies
+    private String apiId;
 
     public WatchlistMovieEntity() {
     }

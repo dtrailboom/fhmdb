@@ -1,13 +1,8 @@
 package at.ac.fhcampuswien.fhmdb.persistence;
 
 import at.ac.fhcampuswien.fhmdb.domain.MovieEntity;
-import at.ac.fhcampuswien.fhmdb.domain.WatchlistMovieEntity;
 import at.ac.fhcampuswien.fhmdb.exceptions.DataBaseException;
 import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.dao.DaoManager;
-import com.j256.ormlite.jdbc.JdbcConnectionSource;
-import com.j256.ormlite.support.ConnectionSource;
-import lombok.Singular;
 import org.openapitools.client.model.Movie;
 
 import java.sql.SQLException;

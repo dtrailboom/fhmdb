@@ -1,4 +1,4 @@
-package at.ac.fhcampuswien.fhmdb.State;
+package at.ac.fhcampuswien.fhmdb.state;
 
 import org.openapitools.client.model.Movie;
 

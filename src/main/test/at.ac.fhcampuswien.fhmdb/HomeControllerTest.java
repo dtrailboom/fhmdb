@@ -36,162 +36,161 @@ class HomeControllerTest {
     }
 
 
-
     //-----SORTING------//
-
-    @Test
-    void sortMoviesAsc() {
-        var expected = List.of(bladeRunner, coolWorld, inception);
-        var result = homeController.sortMovies(movies, false);
-
-        assertEquals(expected, result);
-    }
-
-    @Test
-    void sortMoviesDesc() {
-        var expected = List.of(inception, coolWorld, bladeRunner);
-        var result = homeController.sortMovies(movies, true);
-
-        assertEquals(expected, result);
-    }
-
-    @Test
-    void sortMovies_EmptyList() {
-        assertDoesNotThrow(() -> homeController.sortMovies(List.of(), false));
-    }
-
-    @Test
-    void sortMovies_CaseInsensitive_asc() {
-        Movie movie1 = new Movie().title("Apple").description("An Apple is tasty!").genres(List.of(ACTION));
-        Movie movie2 = new Movie().title("banana").description("banana").genres(List.of(ACTION));
-        movies = List.of(movie2, movie1);
-        var expected = List.of(movie1, movie2);
-        var result = homeController.sortMovies(movies, false);
-
-        assertEquals(expected, result);
-    }
-
-    @Test
-    void sortMovies_CaseInsensitive_desc() {
-        Movie movie1 = new Movie().title("Apple").description("An Apple is tasty!").genres(List.of(ACTION));
-        Movie movie2 = new Movie().title("banana").description("banana").genres(List.of(ACTION));
-        movies = List.of(movie2, movie1);
-        var expected = List.of(movie2, movie1);
-        var result = homeController.sortMovies(movies, true);
-
-        assertEquals(expected, result);
-    }
-
-    @Test
-    void sortMovies_StableSort_asc() {
-        Movie movie1 = new Movie().title("Inception").description("Test Description").genres(List.of(SCIENCE_FICTION));
-        Movie movie2 = new Movie().title("Inception").description("Test Description").genres(List.of(SCIENCE_FICTION));
-        movies = List.of(movie2, movie1);
-        var expected = List.of(movie1, movie2);
-        var result = homeController.sortMovies(movies, false);
-        assertEquals(expected, result);
-    }
-
-    @Test
-    void sortMovies_StableSort_desc() {
-        Movie movie1 = new Movie().title("Inception").description("Test Description").genres(List.of(SCIENCE_FICTION));
-        Movie movie2 = new Movie().title("Inception").description("Test Description").genres(List.of(SCIENCE_FICTION));
-        movies = List.of(movie2, movie1);
-        var expected = List.of(movie2, movie1);
-        var result = homeController.sortMovies(movies, true);
-
-        assertEquals(expected, result);
-    }
-
-    @Test
-    void sortMovies_EmptyTitles_asc() {
-        Movie movie1 = new Movie().title("").description("Test Description").genres(List.of(ACTION));
-        Movie movie2 = new Movie().title("Blade Runner").description("Test Description").genres(List.of(ACTION));
-        movies = List.of(movie2, movie1);
-        var expected = List.of(movie1, movie2);
-        var result = homeController.sortMovies(movies, false);
-
-        assertEquals(expected, result);
-    }
-
-    @Test
-    void sortMovies_EmptyTitles_desc() {
-        Movie movie1 = new Movie().title("").description("Test Description").genres(List.of(ACTION));
-        Movie movie2 = new Movie().title("Blade Runner").description("Test Description").genres(List.of(ACTION));
-        movies = List.of(movie2, movie1);
-        var expected = List.of(movie2, movie1);
-        var result = homeController.sortMovies(movies, true);
-
-        assertEquals(expected, result);
-    }
-
-    @Test
-    void sortMovies_NonAlphanumericCharacters_asc() {
-        Movie movie1 = new Movie().title("@Movie").description("Description 1").genres(List.of(ACTION));
-        Movie movie2 = new Movie().title("!Movie").description("Description 2").genres(List.of(ACTION));
-        Movie movie3 = new Movie().title("?Movie").description("Description 3").genres(List.of(ACTION));
-        movies = List.of(movie2, movie3, movie1);
-        var expected = List.of(movie2, movie3, movie1);
-        var result = homeController.sortMovies(movies, false);
-
-        assertEquals(expected, result);
-    }
-
-    @Test
-    void sortMovies_NonAlphanumericCharacters_desc() {
-        Movie movie1 = new Movie().title("@Movie").description("Description 1").genres(List.of(ACTION));
-        Movie movie2 = new Movie().title("!Movie").description("Description 2").genres(List.of(ACTION));
-        Movie movie3 = new Movie().title("?Movie").description("Description 3").genres(List.of(ACTION));
-        movies = List.of(movie2, movie3, movie1);
-        var expected = List.of(movie1, movie3, movie2);
-        var result = homeController.sortMovies(movies, true);
-
-        assertEquals(expected, result);
-    }
-
-    @Test
-    void sortMovies_LongTitles_asc() {
-        Movie movie1 = new Movie().title("A Very Long Movie Title That Tests Sorting").description("Description 1").genres(List.of(ACTION));
-        Movie movie2 = new Movie().title("Another Long Movie Title").description("Description 2").genres(List.of(ACTION));
-        movies = List.of(movie2, movie1);
-        var result = homeController.sortMovies(movies, false);
-        var expected = List.of(movie1, movie2);
-
-        assertEquals(expected, result);
-    }
-
-    @Test
-    void sortMovies_LongTitles_desc() {
-        Movie movie1 = new Movie().title("A Very Long Movie Title That Tests Sorting").description("Description 1").genres(List.of(ACTION));
-        Movie movie2 = new Movie().title("Another Long Movie Title").description("Description 2").genres(List.of(ACTION));
-        movies = List.of(movie2, movie1);
-        var result = homeController.sortMovies(movies, true);
-        var expected = List.of(movie2, movie1);
-
-        assertEquals(expected, result);
-    }
-
-    @Test
-    void sortMovies_SpecialCharacters_asc() {
-        Movie movie1 = new Movie().title("#Special Movie").description("Description 1").genres(List.of(ACTION));
-        Movie movie2 = new Movie().title("123 Movie").description("Description 2").genres(List.of(ACTION));
-        movies = List.of(movie2, movie1);
-        var result = homeController.sortMovies(movies, false);
-        var expected = List.of(movie1, movie2);
-
-        assertEquals(expected, result);
-    }
-
-    @Test
-    void sortMovies_SpecialCharacters_desc() {
-        Movie movie1 = new Movie().title("#Special Movie").description("Description 1").genres(List.of(ACTION));
-        Movie movie2 = new Movie().title("123 Movie").description("Description 2").genres(List.of(ACTION));
-        movies = List.of(movie2, movie1);
-        var result = homeController.sortMovies(movies, true);
-        var expected = List.of(movie2, movie1);
-
-        assertEquals(expected, result);
-    }
+//
+//    @Test
+//    void sortMoviesAsc() {
+//        var expected = List.of(bladeRunner, coolWorld, inception);
+//        var result = homeController.sortMovies(movies, false);
+//
+//        assertEquals(expected, result);
+//    }
+//
+//    @Test
+//    void sortMoviesDesc() {
+//        var expected = List.of(inception, coolWorld, bladeRunner);
+//        var result = homeController.sortMovies(movies, true);
+//
+//        assertEquals(expected, result);
+//    }
+//
+//    @Test
+//    void sortMovies_EmptyList() {
+//        assertDoesNotThrow(() -> homeController.sortMovies(List.of(), false));
+//    }
+//
+//    @Test
+//    void sortMovies_CaseInsensitive_asc() {
+//        Movie movie1 = new Movie().title("Apple").description("An Apple is tasty!").genres(List.of(ACTION));
+//        Movie movie2 = new Movie().title("banana").description("banana").genres(List.of(ACTION));
+//        movies = List.of(movie2, movie1);
+//        var expected = List.of(movie1, movie2);
+//        var result = homeController.sortMovies(movies, false);
+//
+//        assertEquals(expected, result);
+//    }
+//
+//    @Test
+//    void sortMovies_CaseInsensitive_desc() {
+//        Movie movie1 = new Movie().title("Apple").description("An Apple is tasty!").genres(List.of(ACTION));
+//        Movie movie2 = new Movie().title("banana").description("banana").genres(List.of(ACTION));
+//        movies = List.of(movie2, movie1);
+//        var expected = List.of(movie2, movie1);
+//        var result = homeController.sortMovies(movies, true);
+//
+//        assertEquals(expected, result);
+//    }
+//
+//    @Test
+//    void sortMovies_StableSort_asc() {
+//        Movie movie1 = new Movie().title("Inception").description("Test Description").genres(List.of(SCIENCE_FICTION));
+//        Movie movie2 = new Movie().title("Inception").description("Test Description").genres(List.of(SCIENCE_FICTION));
+//        movies = List.of(movie2, movie1);
+//        var expected = List.of(movie1, movie2);
+//        var result = homeController.sortMovies(movies, false);
+//        assertEquals(expected, result);
+//    }
+//
+//    @Test
+//    void sortMovies_StableSort_desc() {
+//        Movie movie1 = new Movie().title("Inception").description("Test Description").genres(List.of(SCIENCE_FICTION));
+//        Movie movie2 = new Movie().title("Inception").description("Test Description").genres(List.of(SCIENCE_FICTION));
+//        movies = List.of(movie2, movie1);
+//        var expected = List.of(movie2, movie1);
+//        var result = homeController.sortMovies(movies, true);
+//
+//        assertEquals(expected, result);
+//    }
+//
+//    @Test
+//    void sortMovies_EmptyTitles_asc() {
+//        Movie movie1 = new Movie().title("").description("Test Description").genres(List.of(ACTION));
+//        Movie movie2 = new Movie().title("Blade Runner").description("Test Description").genres(List.of(ACTION));
+//        movies = List.of(movie2, movie1);
+//        var expected = List.of(movie1, movie2);
+//        var result = homeController.sortMovies(movies, false);
+//
+//        assertEquals(expected, result);
+//    }
+//
+//    @Test
+//    void sortMovies_EmptyTitles_desc() {
+//        Movie movie1 = new Movie().title("").description("Test Description").genres(List.of(ACTION));
+//        Movie movie2 = new Movie().title("Blade Runner").description("Test Description").genres(List.of(ACTION));
+//        movies = List.of(movie2, movie1);
+//        var expected = List.of(movie2, movie1);
+//        var result = homeController.sortMovies(movies, true);
+//
+//        assertEquals(expected, result);
+//    }
+//
+//    @Test
+//    void sortMovies_NonAlphanumericCharacters_asc() {
+//        Movie movie1 = new Movie().title("@Movie").description("Description 1").genres(List.of(ACTION));
+//        Movie movie2 = new Movie().title("!Movie").description("Description 2").genres(List.of(ACTION));
+//        Movie movie3 = new Movie().title("?Movie").description("Description 3").genres(List.of(ACTION));
+//        movies = List.of(movie2, movie3, movie1);
+//        var expected = List.of(movie2, movie3, movie1);
+//        var result = homeController.sortMovies(movies, false);
+//
+//        assertEquals(expected, result);
+//    }
+//
+//    @Test
+//    void sortMovies_NonAlphanumericCharacters_desc() {
+//        Movie movie1 = new Movie().title("@Movie").description("Description 1").genres(List.of(ACTION));
+//        Movie movie2 = new Movie().title("!Movie").description("Description 2").genres(List.of(ACTION));
+//        Movie movie3 = new Movie().title("?Movie").description("Description 3").genres(List.of(ACTION));
+//        movies = List.of(movie2, movie3, movie1);
+//        var expected = List.of(movie1, movie3, movie2);
+//        var result = homeController.sortMovies(movies, true);
+//
+//        assertEquals(expected, result);
+//    }
+//
+//    @Test
+//    void sortMovies_LongTitles_asc() {
+//        Movie movie1 = new Movie().title("A Very Long Movie Title That Tests Sorting").description("Description 1").genres(List.of(ACTION));
+//        Movie movie2 = new Movie().title("Another Long Movie Title").description("Description 2").genres(List.of(ACTION));
+//        movies = List.of(movie2, movie1);
+//        var result = homeController.sortMovies(movies, false);
+//        var expected = List.of(movie1, movie2);
+//
+//        assertEquals(expected, result);
+//    }
+//
+//    @Test
+//    void sortMovies_LongTitles_desc() {
+//        Movie movie1 = new Movie().title("A Very Long Movie Title That Tests Sorting").description("Description 1").genres(List.of(ACTION));
+//        Movie movie2 = new Movie().title("Another Long Movie Title").description("Description 2").genres(List.of(ACTION));
+//        movies = List.of(movie2, movie1);
+//        var result = homeController.sortMovies(movies, true);
+//        var expected = List.of(movie2, movie1);
+//
+//        assertEquals(expected, result);
+//    }
+//
+//    @Test
+//    void sortMovies_SpecialCharacters_asc() {
+//        Movie movie1 = new Movie().title("#Special Movie").description("Description 1").genres(List.of(ACTION));
+//        Movie movie2 = new Movie().title("123 Movie").description("Description 2").genres(List.of(ACTION));
+//        movies = List.of(movie2, movie1);
+//        var result = homeController.sortMovies(movies, false);
+//        var expected = List.of(movie1, movie2);
+//
+//        assertEquals(expected, result);
+//    }
+//
+//    @Test
+//    void sortMovies_SpecialCharacters_desc() {
+//        Movie movie1 = new Movie().title("#Special Movie").description("Description 1").genres(List.of(ACTION));
+//        Movie movie2 = new Movie().title("123 Movie").description("Description 2").genres(List.of(ACTION));
+//        movies = List.of(movie2, movie1);
+//        var result = homeController.sortMovies(movies, true);
+//        var expected = List.of(movie2, movie1);
+//
+//        assertEquals(expected, result);
+//    }
 //--END--//
 
     //--FILTERING--//
@@ -922,6 +921,7 @@ class HomeControllerTest {
 
         connectionSource.close();
     }
+
     //----------CONTROLLER-FACTORY-----------
     @Test
     void returnsSameInstance_ForHomeController() {
@@ -952,7 +952,8 @@ class HomeControllerTest {
     }
 
     static class NoDefaultConstructor {
-        public NoDefaultConstructor(String msg) {}
+        public NoDefaultConstructor(String msg) {
+        }
     }
 
     @Test

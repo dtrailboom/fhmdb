@@ -1,6 +1,6 @@
 package at.ac.fhcampuswien.fhmdb;
 
-import at.ac.fhcampuswien.fhmdb.State.*;
+import at.ac.fhcampuswien.fhmdb.state.*;
 import at.ac.fhcampuswien.fhmdb.domain.MovieEntity;
 import at.ac.fhcampuswien.fhmdb.domain.WatchlistMovieEntity;
 import at.ac.fhcampuswien.fhmdb.eventHandler.ClickEventHandler;
@@ -10,8 +10,6 @@ import at.ac.fhcampuswien.fhmdb.persistence.WatchlistRepository;
 import at.ac.fhcampuswien.fhmdb.ui.MovieCell;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -54,9 +52,7 @@ public class HomeController implements Initializable, InvalidationListener {
     private boolean isHomeView = true;
     private MovieRepository movieRepository;
     private WatchlistRepository watchlistRepository;
-
-    private SortContext sortContext;    //hält den aktuellen Status der Sortierung
-
+    private SortContext sortContext;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -65,8 +61,8 @@ public class HomeController implements Initializable, InvalidationListener {
             watchlistRepository = WatchlistRepository.getInstance();
             watchlistRepository.addListener(this);
             allMovies = loadMovies();
-            sortContext= new SortContext();
-            sortContext.setState( new UnsortedState()); //unsortiert - ändert die bestehende Sortierung nicht
+            sortContext = new SortContext();
+            sortContext.setState(new UnsortedState());
             observableMovies.setAll(allMovies);
 
         } catch (DataBaseException e) {
@@ -114,16 +110,16 @@ public class HomeController implements Initializable, InvalidationListener {
     public void applySort() {
         if (sortBtn.getText().equals("Sort (asc)")) {
             //Aufsteigend Sort
-            sortContext.setState ( new AscendingState());
-            List<Movie>sorted = sortContext.sort(observableMovies);
+            sortContext.setState(new AscendingState());
+            List<Movie> sorted = sortContext.sort(observableMovies);
             observableMovies.setAll(sorted);
 
             sortBtn.setText("Sort (desc)");
 
         } else {
             //Absteigend Sort
-            sortContext.setState ( new DescendingState());
-            List<Movie>sorted = sortContext.sort(observableMovies);
+            sortContext.setState(new DescendingState());
+            List<Movie> sorted = sortContext.sort(observableMovies);
             observableMovies.setAll(sorted);
 
             sortBtn.setText("Sort (asc)");

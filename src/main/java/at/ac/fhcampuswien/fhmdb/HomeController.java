@@ -1,5 +1,6 @@
 package at.ac.fhcampuswien.fhmdb;
 
+import at.ac.fhcampuswien.fhmdb.State.*;
 import at.ac.fhcampuswien.fhmdb.domain.MovieEntity;
 import at.ac.fhcampuswien.fhmdb.domain.WatchlistMovieEntity;
 import at.ac.fhcampuswien.fhmdb.eventHandler.ClickEventHandler;
@@ -54,6 +55,9 @@ public class HomeController implements Initializable, InvalidationListener {
     private MovieRepository movieRepository;
     private WatchlistRepository watchlistRepository;
 
+    private SortContext sortContext;    //hält den aktuellen Status der Sortierung
+
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         try {
@@ -61,7 +65,10 @@ public class HomeController implements Initializable, InvalidationListener {
             watchlistRepository = WatchlistRepository.getInstance();
             watchlistRepository.addListener(this);
             allMovies = loadMovies();
+            sortContext= new SortContext();
+            sortContext.setState( new UnsortedState()); //unsortiert - ändert die bestehende Sortierung nicht
             observableMovies.setAll(allMovies);
+
         } catch (DataBaseException e) {
             showAlert("Database Error", "Could not load movies: " + e.getMessage(), Alert.AlertType.ERROR);
         }
@@ -99,16 +106,26 @@ public class HomeController implements Initializable, InvalidationListener {
         String rating = ratingField.getText().trim();
 
         List<Movie> filtered = filterMovies(searchText, selectedGenre, releaseYear, rating);
-        observableMovies.setAll(filtered);
+        List<Movie> sorted = sortContext.sort(filtered);   //aktuelle Sortierung muss nach Filter erhalten bleiben
+        observableMovies.setAll(sorted);
     }
 
     @FXML
-    void applySort() {
+    public void applySort() {
         if (sortBtn.getText().equals("Sort (asc)")) {
-            observableMovies.setAll(sortMovies(observableMovies, true));
+            //Aufsteigend Sort
+            sortContext.setState ( new AscendingState());
+            List<Movie>sorted = sortContext.sort(observableMovies);
+            observableMovies.setAll(sorted);
+
             sortBtn.setText("Sort (desc)");
+
         } else {
-            observableMovies.setAll(sortMovies(observableMovies, false));
+            //Absteigend Sort
+            sortContext.setState ( new DescendingState());
+            List<Movie>sorted = sortContext.sort(observableMovies);
+            observableMovies.setAll(sorted);
+
             sortBtn.setText("Sort (asc)");
         }
     }
@@ -143,15 +160,6 @@ public class HomeController implements Initializable, InvalidationListener {
         } catch (NumberFormatException e) {
             return null;
         }
-    }
-
-    public List<Movie> sortMovies(List<Movie> movies, boolean descending) {
-        return movies.stream()
-                .sorted(Comparator.comparing(Movie::getTitle, Comparator.nullsLast(String::compareToIgnoreCase))
-                        .reversed().reversed()) // correct asc/desc
-                .sorted(descending ? Comparator.comparing(Movie::getTitle).reversed()
-                        : Comparator.comparing(Movie::getTitle))
-                .toList();
     }
 
     @FXML
